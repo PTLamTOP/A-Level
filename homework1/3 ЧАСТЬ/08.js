@@ -21,10 +21,10 @@ arrFilter.reduce(function(prev, current) {
 })
 
 
-// QUESTION 
-arr.reduce(function(prev, current) {
-    if (current > 0) {
-        result = prev + current
-        return result
+// 3 variant
+let result = arr.reduce(function(prev, current) {
+    if (prev > 0 && current > 0) {
+        prev = prev + current
+        return prev
     }
 })
