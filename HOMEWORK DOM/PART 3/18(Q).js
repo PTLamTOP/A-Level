@@ -23,3 +23,12 @@ let eventHandler = function(event) {
 
 // adding event handler
 elemTest.onclick = eventHandler
+
+
+// BG code
+myunique.onclick = function() {
+    myunique.style.padding = '20px 40px'
+    myunique.style.fontSize = '40px'
+    myunique.style.backgroundColor = 'red'
+    myunique.style.transition = '2s all'
+}

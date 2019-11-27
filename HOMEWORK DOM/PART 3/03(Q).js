@@ -15,6 +15,13 @@ let countyn = 0
 let countgl = 0
 
 
+let elements = document.getElementsByTagName('a')
+
+let arr = Array.from(elements)
+
+
+
+
 // writting function for event Handler
 let eventHandlerAddHref = function() {
     let oldText = event.target.innerText

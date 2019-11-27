@@ -5,9 +5,10 @@
 
 // QUESTION
 
-let inputEl = document.getElementById('input')
-let value = Number(inputEl.value)
-
-setInterval(() => {
-    (value === NaN ) ? inputEl.style.color='red': inputEl.style.color='green'
-}, 10)
+input.oninput = function() {
+    if (isNaN(input.value) == true) {
+        input.style.color = 'red'
+    } else {
+        input.style.color = 'green'
+    }
+}

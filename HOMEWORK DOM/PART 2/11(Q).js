@@ -8,3 +8,12 @@ elements.array.forEach(element => {
     let newText = `${elementText} ${element.tagName}`
     element.innerHTML = newText
 });
+
+
+myunique.classList.forEach(function(elm) {
+	if (elm == 'www') {
+        document.getElementsByClassName(elm)[0].innerText += myunique.tagName.toLowerCase()
+    } else {
+		console.log(false)
+	}
+});
