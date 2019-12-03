@@ -1,19 +1,28 @@
-# ЗАДАЧА: Класс, который принимает дату рождения в текстовый формат (01-05-1991). Задача написать при инициализации объекта, что данные правильноые. И написать property, которая возвращает возраст
+"""
+1) класс, который принимает дату рождения в текстовый формат (01-05-1991).
+2) написать property, которая возвращает возраст
+3) вынести в статик метод метод перевода строки в дату
+4) написать свойство которое говорить сколько человек прожил високосных год.
+)Узнать какие годы были высокосные и потом посчитать количество)
+"""
 
 # импортируем модуль datetime для работы с датой и временем
 import datetime
 
 
 # создаем свой класс ошибки для обработки неправильного форматат даты
-class FormatDateError(Exception):
+class WrongFormatDate(Exception):
     pass
 
 class InvalidDate(Exception):
     pass
 
-# создаем класс людей(Man)
+
+# создаем класс Man
 class Man:
-    def __init__(self, name, date): # принимаем имя и дату рождения при нициализации
+    _name = 'Lam'
+    # принимаем имя и дату рождения при нициализации
+    def __init__(self, name: str, date: str, *args , **kwargs):
         self.name = name
         self._date = self._validate_date(date=date)
 
@@ -49,6 +58,11 @@ class Man:
         return datetime.datetime.strptime(date, '%d-%m-%Y')
 
     @property
+    def name(self):
+        return _name
+
+    """
+    @property
     def leap_year(self):
         birthday_year = self._date.year
         today_day = datetime.today().year
@@ -59,13 +73,13 @@ class Man:
             elif (year % 4 == 0):
                 leap_year += 1
         return f'{self.name}\'ve lived for {leap_year} leap years.'
+    """
 
 
-# вынести в статик метод метод перевода строки в дату
 man_1 = Man('Akira', '04-12-1999')
-print(man_1.leap_year)
+print(man_1.get_attribute())
 
-# свойство которое говорить сколько человек прожил високосных год. Узнать какие годы были высокосные и потом посчитать количество.
+
 
 
 
