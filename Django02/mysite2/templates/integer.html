@@ -1,0 +1,16 @@
+{% extends 'index.html' %} {% block content %}
+    {# check if number is even #}
+    {% if number|divisibleby:"2" %}
+        <div class="progress-bar bg-success" role="progressbar" style="width: 100%" aria-valuenow="25"
+             aria-valuemin="0" aria-valuemax="100">
+            <h2><u>{{ number }} - четное число!</u></h2>
+            <h1>Ты победил!<h1>
+        </div>
+    {% else %}
+        <div class="progress-bar bg-danger" role="progressbar" style="width: 100%"
+             aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">
+            <h2><u>{{ number }} - нечетное число!</u></h2>
+            <h1>Ты проиграл!</h1>
+        </div>
+    {% endif %}
+{% endblock %}

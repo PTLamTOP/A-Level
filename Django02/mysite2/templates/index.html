@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <title>Title</title>
+</head>
+
+<body>
+    <header style="width: 200px; margin-left: auto; margin-right: auto">
+        <img src="https://picsum.photos/200/300" alt="My image">
+    </header>
+    <hr>
+
+    {# content block #}
+    <div style="background-color: aqua">
+        {% block content %} {% endblock %}
+    </div>
+
+
+    {# random integer button #}
+    <div style="width: 100px; margin-left: auto; margin-right: auto">
+        <p>
+            <a style="width: 80px; height: 40px" class="btn btn-primary" role="button"
+               href='http://127.0.0.1:8000/{{random_int}}'>Integer</a>
+        </p>
+    </div>
+
+    {# random string button #}
+    <div style="width: 100px; margin-left: auto; margin-right: auto">
+        <p>
+            <a style="width: 80px; height: 40px" class="btn btn-primary" role="button"
+               href='http://127.0.0.1:8000/{{random_str}}'>String</a>
+        </p>
+    </div>
+
+    <hr>
+    <footer style="width: 100px; margin-left: auto; margin-right: auto">
+        <a class="badge badge-info" href="{% url 'index' %}">Index Page</a>
+    </footer>
+</body>
+
+</html>

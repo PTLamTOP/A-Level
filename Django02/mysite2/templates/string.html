@@ -1,0 +1,16 @@
+{% extends 'index.html' %} {% block content %}
+    {# check if length of string is even #}
+    {% if string_len|divisibleby:"2" %}
+        <div class="progress-bar bg-success" role="progressbar" style="width: 100%" aria-valuenow="25"
+             aria-valuemin="0" aria-valuemax="100">
+            <h2><u>Длина строки {{ string_len }} - четное число!</u></h2>
+            <h1>Ты победил!<h1>
+        </div>
+    {% else %}
+        <div class="progress-bar bg-danger" role="progressbar" style="width: 100%"
+             aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">
+            <h2><u>Длина строки {{ string_len }} - нечетное число!</u></h2>
+            <h1>Ты проиграл!</h1>
+        </div>
+    {% endif %}
+{% endblock %}
