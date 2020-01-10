@@ -1,0 +1,12 @@
+{%  extends 'blog/base.html' %}
+
+{% block content %}
+
+    <p>Name: {{ animal.name }}</p>
+    <p>Sex: {{ animal.sex }}</p>
+    <p>Age: {{ animal.age }}
+    <p>Was visited {{ visit_5_minutes_ago.count }} time{{ visit_5_minutes_ago.count|pluralize }} 5 minutes ago</p>
+    <p>Was visited {{ animal.visit_set.count }} time{{ animal.visit_set.count|pluralize }}</p>
+
+    <a href="{% url 'zoo:animal-list' %}">Home page</a>
+{% endblock %}
