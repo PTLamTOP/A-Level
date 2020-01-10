@@ -1,8 +1,14 @@
 from django.views.generic import ListView, DetailView, CreateView, FormView
-from .models import Animal
+from django.contrib.auth.views import LoginView, LogoutView
+from django.contrib.auth.mixins import LoginRequiredMixin
+
+from .models import Animal, Ticket
+from .forms import AnimalForm
+
 from django.utils import timezone
 from datetime import timedelta
-from .forms import AnimalForm
+
+from django.urls import reverse
 
 
 class AnimalList(FormView, ListView):
@@ -47,13 +53,45 @@ class AnimalDetail(DetailView):
         return context
 
 
-class AnimalCreate(CreateView):
+class AnimalCreate(LoginRequiredMixin, CreateView):
     model = Animal
     fields = ['name', 'age', 'sex', 'type']
     template_name = 'myapp/animal_create.html'
     extra_context = {'title': 'Animal Create'}
 
+    def get_login_url(self):
+        return reverse('zoo:login')
 
+
+class TicketCreate(LoginRequiredMixin, CreateView):
+    model = Ticket
+    fields = ['age_limit']
+    template_name = 'myapp/ticket_create.html'
+    extra_context = {'title': 'Ticket buy'}
+    success_url = '/'
+
+    def get_login_url(self):
+        return reverse('zoo:login')
+
+    def form_valid(self, form):
+        form.instance.visitor = self.request.user
+        return super().form_valid(form)
+
+
+
+
+class CustomLoginView(LoginView):
+    template_name = 'myapp/login.html'
+    login_url = 'login'
+    extra_context = {'title': 'Login'}
+
+    def get_success_url(self):
+        return reverse('zoo:animal-list')
+
+
+class CustomLogoutView(LogoutView):
+    template_name = 'myapp/logout.html'
+    extra_context = {'title': 'Logout'}
 
 
 

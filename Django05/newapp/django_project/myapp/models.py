@@ -52,7 +52,7 @@ class Ticket(models.Model):
     visitor = models.ForeignKey(Visitor, on_delete=models.CASCADE, related_name='tickets', null=False)
 
     def save(self, *args, **kwargs):
-        self.expired_at = timezone.now() - timedelta(days=1)
+        self.expired_at = timezone.now() + timedelta(days=1)
         super().save(*args, **kwargs)
 
     def __str__(self):

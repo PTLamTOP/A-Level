@@ -5,8 +5,24 @@
     <title>Zoo: {{ title }}</title>
 </head>
 <body>
-    <h1> Welcome to the zoo!</h1>
+    <div id="login-logout>">
+        {% if user.is_authenticated %}
+            <h4>
+                <a href="{% url 'zoo:logout' %}">Logout</a>
+            </h4>
+            <h4>
+                <a href="{% url 'zoo:ticket-buy' %}">Buy ticket</a>
+            </h4>
+        {% else %}
+            <h4>
+                <a href="{% url 'zoo:login' %}">Login</a>
+            </h4>
+         {% endif %}
+    </div>
+
+    <h1> {{ user.username }} welcome to the zoo!</h1>
     {% block content %}
+
     {% endblock content %}
 
 </body>

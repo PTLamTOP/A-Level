@@ -1,0 +1,17 @@
+{%  extends 'myapp/base.html' %}
+
+{% block content %}
+
+    <form method="post">
+        {% csrf_token %}
+        <fieldset>
+            <legend>Buy tickets</legend>
+            {{ form.as_p }}
+        </fieldset>
+
+        <button type="submit">Buy</button>>
+    </form>
+    <br>
+
+    <a href="{% url 'zoo:animal-list' %}">Home page</a>
+{% endblock %}

@@ -2,9 +2,11 @@
 
 {% block content %}
 
-    <h3>
-        <a href="{% url 'zoo:animal-create' %}">Create new animal</a>
-    </h3>
+    <div id="create-animal>">
+        <h3>
+            <a href="{% url 'zoo:animal-create' %}">Create new animal</a>
+        </h3>
+    </div>
     <br>
 
     <div id="search-system">
@@ -29,13 +31,15 @@
     </div>
     <br>
 
-    <h2>List of animals in the zoo:</h2>
-    {% for animal in animals %}
-        <p><a href="{% url 'zoo:animal-detail' animal.id %}">Name: {{ animal.name }}</a></p>
-        <p>Type: {{ animal.type }}</p>
-        <hr>
-    {% empty %}
-        <p>There is not any animal.</p>
-    {%  endfor %}
+    <div id="animal-list">
+        <h2>List of animals in the zoo:</h2>
+        {% for animal in animals %}
+            <p><a href="{% url 'zoo:animal-detail' animal.id %}">Name: {{ animal.name }}</a></p>
+            <p>Type: {{ animal.type }}</p>
+            <hr>
+        {% empty %}
+            <p>There is not any animal.</p>
+        {%  endfor %}
+    </div>
 
 {% endblock content %}
