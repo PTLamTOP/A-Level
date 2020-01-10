@@ -1,0 +1,41 @@
+{% extends 'myapp/base.html' %}
+
+{% block content %}
+
+    <h3>
+        <a href="{% url 'zoo:animal-create' %}">Create new animal</a>
+    </h3>
+    <br>
+
+    <div id="search-system">
+
+        <form action="." method="get">
+            <legend><h3>Search an animal by name:</h3></legend>
+            {{ form.as_p }}
+            <button type="submit">Search</button>
+        </form>
+
+        <div id="search-results">
+            {% if search_results %}
+                {% for animal in search_results %}
+                    <p><a href="{% url 'zoo:animal-detail' animal.id %}">Name: {{ animal.name }}</a></p>
+                    <p>Type: {{ animal.type }}</p>
+                    <hr>
+                {% empty %}
+                    <p>There is not any animal with this name!</p>
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+    <br>
+
+    <h2>List of animals in the zoo:</h2>
+    {% for animal in animals %}
+        <p><a href="{% url 'zoo:animal-detail' animal.id %}">Name: {{ animal.name }}</a></p>
+        <p>Type: {{ animal.type }}</p>
+        <hr>
+    {% empty %}
+        <p>There is not any animal.</p>
+    {%  endfor %}
+
+{% endblock content %}

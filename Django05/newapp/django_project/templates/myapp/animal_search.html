@@ -1,0 +1,23 @@
+{% extends 'myapp/base.html' %}
+
+{% block content %}
+    {{ request.GET }}
+
+    <form action="." method="get">
+        <legend><h3>Search an animal by name:</h3></legend>
+        {{ form.name }}
+        <button type="submit">Search</button>
+    </form>
+
+    <div>
+        {% for animal in search_results %}
+            <p><a href="{% url 'zoo:animal-detail' animal.id %}">Name: {{ animal.name }}</a></p>
+            <p>Type: {{ animal.type }}</p>
+            <hr>
+        {% endfor %}
+    </div>
+    <br>
+
+    <a href="{% url 'zoo:animal-list'%}">Home</a>
+
+{% endblock content %}

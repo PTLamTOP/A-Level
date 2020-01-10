@@ -16,14 +16,13 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 # from myapp.views import index
-from myapp.views import MyFormView, request, login_view, \
-    logout_view, CustomLoginView, CustomLogoutView
+from myapp.views import ArticleListView, CustomLoginView, CustomLogoutView, SearchFormView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', MyFormView.as_view(), name='index'),
+    path('', ArticleListView.as_view(), name='index'),
     # path('', index, name='index'),
-    path('request/', request, name='request'),
     path('login/', CustomLoginView.as_view(), name='login'),
     path('logout/', CustomLogoutView.as_view(), name='logout'),
+    path('search/', SearchFormView.as_view(), name='search'),
 ]

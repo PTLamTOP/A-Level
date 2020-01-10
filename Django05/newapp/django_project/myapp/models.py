@@ -1,15 +1,14 @@
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext as _
-from django.contrib.auth.models import User
+from django.contrib.auth.models import AbstractUser
 from datetime import timedelta
 from django.urls import reverse
 
-
 SEX_CHOICES = (
-        (1, _("male")),
-        (2, _("female")),
-    )
+    (1, _("male")),
+    (2, _("female")),
+)
 
 
 class Animal(models.Model):
@@ -35,13 +34,13 @@ class Animal(models.Model):
         ordering = ['-arrived_at']
 
 
-class Visitor(User):
-    age = models.IntegerField()
-    sex = models.IntegerField(choices=SEX_CHOICES)
+class Visitor(AbstractUser):
+    age = models.IntegerField(null=True)
+    sex = models.IntegerField(choices=SEX_CHOICES, null=True)
 
     def __str__(self):
         return self.username
-    
+
     class Meta:
         verbose_name = _('visitor')
 
