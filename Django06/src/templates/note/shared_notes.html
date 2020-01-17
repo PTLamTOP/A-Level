@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Home</title>
+</head>
+<body>
+
+
+    <p><a href="{% url 'note:note-list' %}">Home</a></p>
+    <p><a href="{% url 'logout' %}">Logout</a></p>
+    <hr>
+
+    <div id="shared-note-list">
+    <h2>Shared Notes:</h2>
+        {% for note in shared_notes %}
+            <p>Note by {{ note.author }}, {{ note.created_at }}</p>
+            <p>{{ note.text }}</p>
+            <p>Shared status: {{ note.is_shared }}</p>
+            {% if note.is_shared == True %}
+                <form action="{% url 'note:unshare-note' note.id %}" method="post">
+                    {%  csrf_token %}
+                    <button type="submit" value="Unshare note">Unshare Note</button>
+                </form>
+                <br>
+            {%  endif %}
+            <hr>
+        {% empty %}
+            <h4>There is not any note now...</h4>
+        {% endfor %}
+    </div>
+    <br>
+
+    <div id="pagination">
+        {%  if page_obj.has_previous %}
+            <a class="btn btn-outline-info" href="?page={{ page_obj.previous_page_number }}">Older notes</a>
+        {% endif %}
+
+        {%  if page_obj.has_next %}
+            <a class="btn btn-outline-info" href="?page={{ page_obj.next_page_number }}">Newer notes</a>
+        {% endif %}
+    </div>
+    <br>
+    <br>
+
+</body>
+</html>

@@ -16,7 +16,10 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 # from myapp.views import index
-from myapp.views import ArticleListView, CustomLoginView, CustomLogoutView, SearchFormView
+from myapp.views import ArticleListView, CustomLoginView, \
+    CustomLogoutView, SearchResultList, RegistrationView, ChangingPasswordView, \
+    ArticleDetailView, CreateCommentView, UpdateCommentVIew, DeleteCommentView, \
+    CommentDetailView, UpdateCommentStatusVIew, ArticleCreateView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -24,5 +27,14 @@ urlpatterns = [
     # path('', index, name='index'),
     path('login/', CustomLoginView.as_view(), name='login'),
     path('logout/', CustomLogoutView.as_view(), name='logout'),
-    path('search/', SearchFormView.as_view(), name='search'),
+    path('search/', SearchResultList.as_view(), name='search'),
+    path('register/', RegistrationView.as_view(), name='register'),
+    path('pass-change/', ChangingPasswordView.as_view(), name='pass-change'),
+    path('article/<int:pk>', ArticleDetailView.as_view(), name='article-detail'),
+    path('comment-create/>', CreateCommentView.as_view(), name='comment-create'),
+    path('comment-update/<int:pk>', UpdateCommentVIew.as_view(), name='comment-update'),
+    path('comment-update-status/<int:pk>', UpdateCommentStatusVIew.as_view(), name='comment-update-status'),
+    path('comment-delete/<int:pk>', DeleteCommentView.as_view(), name='comment-delete'),
+    path('comment/<int:pk>', CommentDetailView.as_view(), name='comment-detail'),
+    path('article-create/', ArticleCreateView.as_view(), name='article-create'),
 ]

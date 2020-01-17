@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Home</title>
+</head>
+<body>
+
+    {% if user.is_authenticated %}
+        <p><a href="{% url 'logout' %}">Logout</a></p>
+        <h3><a href="{% url 'note:shared-note-list' %}">Shared Notes</a></h3>
+        <hr>
+
+        <h1>Welcome {{ user.username }}!</h1>
+        <hr>
+
+       <div id="search">
+            <h3>Search note by text:</h3>
+            <form action="{% url 'note:note-list' %}" method="get">
+                {% csrf_token %}
+                {{ note_form.text }}
+                <button type="submit" value="search">Search</button>
+            </form>
+            {% if search_result %}
+                {% for note in search_result %}
+                    <p>Note by {{ note.author }}, {{ note.created_at }}</p>
+                    <p>{{ note.text }}</p>
+                    <hr>
+                {% empty %}
+                    <h4>No such note...</h4>
+                {% endfor %}
+            {% endif %}
+        </div>
+        <br>
+
+        <div id="note-list">
+        <h2>Notes:</h2>
+            {% for note in notes %}
+                <p>Note by {{ note.author }}, {{ note.created_at }}</p>
+                <p>{{ note.text }}</p>
+                <p> Shared status: {{ note.is_shared }}</p>
+
+                {% if note.is_shared == False %}
+                    <form action="{% url 'note:share-note' note.id %}" method="post">
+                        {%  csrf_token %}
+                        <button type="submit" value="Share note">Share Note</button>
+                    </form>
+                    <br>
+                {%  endif %}
+
+                <form action="{% url 'note:note-delete' note.id %}" method="post">
+                    {%  csrf_token %}
+                    <button type="submit" value="Delete note">Delete Note</button>
+                </form>
+                <hr>
+            {% empty %}
+                <h4>There is not any note now...</h4>
+            {% endfor %}
+        </div>
+        <br>
+
+        <div id="pagination">
+            {%  if page_obj.has_previous %}
+                <a class="btn btn-outline-info" href="?page={{ page_obj.previous_page_number }}">Older notes</a>
+            {% endif %}
+
+            {%  if page_obj.has_next %}
+                <a class="btn btn-outline-info" href="?page={{ page_obj.next_page_number }}">Newer notes</a>
+            {% endif %}
+        </div>
+        <br>
+        <br>
+
+        <div id="create-note">
+            <p>
+                <form action="{% url 'note:note-create'%}" method="post">
+                    {% csrf_token %}
+                    {{ note_form.as_p }}
+                    <button type="submit" value="Create note">Create Note</button>
+                </form>
+            </p>
+        </div>
+
+    {% else %}
+        Please login or register!
+        <p><a href="{% url 'login' %}">Login</a></p>
+        <p><a href="{% url 'register' %}">Register</a></p>
+    {% endif %}
+
+</body>
+</html>

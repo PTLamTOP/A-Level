@@ -5,11 +5,13 @@
     <title>Title</title>
 </head>
 <body>
-    <form method="get">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Search</button>
-    </form>
+
+    <h2>Search results:</h2>
+    {% for article in object_list %}
+        <p>Article by {{ article.author }}, {{ article.created_at }} . Genre is {{ article.genre }}</p>
+        <p>{{ article.text }}</p>
+        <hr>
+    {% endfor %}
 
     <a href="{% url 'index' %}">Home</a>
 </body>

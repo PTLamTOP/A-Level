@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Article {{ article.id }}</title>
+</head>
+<body>
+    <a href="{% url 'index' %}">Home</a>
+
+    <p>Article by {{ article.author }}, {{ article.created_at }} . Genre is {{ article.genre }}</p>
+    <p>{{ article.text }}</p>
+    <hr>
+
+    {% for comment in comments_active %}
+        <p>Comment by <b>{{ comment.user.name}}</b>, status: <i>{{ comment.is_active }}</i></p>
+        <p><a href="{% url 'comment-detail' comment.id %}">{{ comment.text }}</a></p>
+        <p><a href="{% url 'comment-update' comment.id %}">Update Comment</a></p>
+        <p>
+            <form action="{% url 'comment-update-status' comment.id %}" method="post">
+                {% csrf_token %}
+                <button type="submit" value="Change status">Update Comment Status</button>
+            </form>
+        </p>
+        <p>
+            <form action="{% url 'comment-delete' comment.id %}" method="post">
+                {% csrf_token %}
+                {{ comment_create.is_active }}
+                <button type="submit" value="Delete comment">Delete Comment</button>
+            </form>
+        </p>
+        <hr>
+    {% empty %}
+        <p>There is not any comment...</p>
+    {% endfor %}
+
+    <h2>Create comment:</h2>
+    <form action="{% url 'comment-create' %}" method="post">
+        {% csrf_token %}
+        {{ comment_create.as_p }}
+        <button type="submit" value="Create comment">Create comment</button>
+    </form>
+</body>
+</html>

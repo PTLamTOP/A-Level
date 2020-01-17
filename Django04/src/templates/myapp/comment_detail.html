@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Comment detail</title>
+</head>
+<body>
+    <p>Comment by <b>{{ comment.user.name }}</b> for article <a href="{% url 'article-detail' comment.article.id %}">{{ comment.article.id }}</a>.</p>
+    <p>Text: {{ comment.text }}</p>
+
+    <p><a href="{% url 'index' %}">Home</a></p>
+
+</body>
+</html>

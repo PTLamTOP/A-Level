@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 from django.utils.translation import gettext as _
 from datetime import timedelta
+from django.urls import reverse
 
 GENRE_CHOICES = (
     (1, _("Not selected")),
@@ -29,11 +30,14 @@ class Article(models.Model):
     genre = models.IntegerField(choices=GENRE_CHOICES, default=1)
 
     def save(self, *args, **kwargs):
-        self.created_at = timezone.now() - timedelta(years=1)
+        self.created_at = timezone.now() - timedelta(days=1)
         super().save(*args, **kwargs)
 
     def __str__(self):
         return "Author - {}, genre - {}, id - {}, created - {}".format(self.author.name, self.genre, self.id, self.created_at)
+
+    def get_absolute_url(self):
+        return reverse('article-detail', kwargs={'pk': self.id})
 
 
 class Comment(models.Model):
@@ -42,12 +46,10 @@ class Comment(models.Model):
     comment = models.ForeignKey('myapp.Comment', null=True, blank=True, on_delete=models.DO_NOTHING,
                                 related_name='comments')
     user = models.ForeignKey(Author, on_delete=models.CASCADE, related_name='comments')
+    is_active = models.BooleanField(default=True)
 
     def __str__(self):
         return "{} by {}".format(self.text, self.user.name)
-
-
-
 
 
 class Like(models.Model):
