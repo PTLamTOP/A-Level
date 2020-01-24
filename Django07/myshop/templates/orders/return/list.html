@@ -1,0 +1,27 @@
+{% extends 'shop/base.html' %}
+
+{% block title %}Returns{% endblock %}
+
+{% block content %}
+    <div>
+        <h3>Returns</h3>
+            <ul>
+                {% for return in returns %}
+                    <li>
+                        Order Item <strong>#{{ return.item }}</strong>, ${{ return.item.get_cost }},
+                        ordered at {{ return.created }}
+                    </li>
+                    <form action="{% url 'orders:order-item-delete' return.item.id %}" method="post">
+                        {% csrf_token %}
+                        <input type="submit" value="Approve">
+                    </form>
+                    <form action="{% url 'orders:return-request-delete' return.id %}" method="post">
+                        {% csrf_token %}
+                        <input type="submit" value="Deny">
+                    </form>
+                {% empty %}
+                    <p>There is not any return yet.</p>
+                {% endfor %}
+            </ul>
+    </div>
+{% endblock content %}

@@ -1,0 +1,34 @@
+{% extends 'shop/base.html' %}
+{% load static %}
+
+{%  block title %}
+    {{ product.name }}
+{% endblock title %}
+
+{% block content %}
+    <div>
+        <img height="400px" width="400px" src="{% if product.image %}{{ product.image.url }}{% else %}{% static 'img/no_image.png' %}{% endif %}">
+        <h1>{{ product.name }}</h1>
+        <p>Stock: {{ product.stock }}</p>
+        <p>${{ product.price }}</p>
+        {% if user.is_authenticated %}
+        <form action="{% url 'cart:cart_add' product.id %}" method="post">
+            {{ cart_product_form }}
+            {% csrf_token %}
+            <input type="submit" value="Add to cart">
+        </form>
+        {% endif %}
+        <p>{{ product.description|linebreaks }}</p>
+    </div>
+
+    {% if user.is_superuser %}
+        <button><a href="{% url 'shop:product-update' product.id product.slug %}">Update product</a></button>
+        <hr>
+        <form action="{% url 'shop:product-delete' product.id product.slug %}" method="post">
+            {% csrf_token %}
+            <input type="submit" value="Delete product">
+        </form>
+    {% endif %}
+    <hr>
+    <br>
+{% endblock %}

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Login</title>
+    <title>Title</title>
 </head>
 <body>
     {% if messages %}
@@ -13,10 +13,11 @@
         </ul>
     {% endif %}
 
-    <form action="{% url 'login' %}" method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" value="Login">Login</button>
-    </form>
+    <p>Email confirmation:</p>
+        <form method="post">
+            {{ form.as_p }}
+            {%  csrf_token %}
+            <button type="submit" value="Confirm Email">Confirm Email</button>
+        </form>
 </body>
 </html>

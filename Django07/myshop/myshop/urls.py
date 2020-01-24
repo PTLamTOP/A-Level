@@ -1,7 +1,7 @@
-"""django_project URL Configuration
+"""myshop URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/3.0/topics/http/urls/
+    https://docs.djangoproject.com/en/2.2/topics/http/urls/
 Examples:
 Function views
     1. Add an import:  from my_app import views
@@ -15,14 +15,17 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from note.views import CustomLogoutView, CustomLoginView, RegistrationView, ConfirmEmail
-
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('note/', include('note.urls', namespace='note')),
-    path('login/', CustomLoginView.as_view(), name='login'),
-    path('logout/', CustomLogoutView.as_view(), name='logout'),
-    path('register/', RegistrationView.as_view(), name='register'),
-    path('confirm-email/<int:pk>/', ConfirmEmail.as_view(), name='confirm-email'),
+    path('cart/', include('cart.urls', namespace='cart')),
+    path('users/', include('users.urls', namespace='users')),
+    path('', include('shop.urls', namespace='shop')),
+    path('orders/', include('orders.urls', namespace='orders')),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+

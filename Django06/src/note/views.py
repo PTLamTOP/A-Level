@@ -1,12 +1,20 @@
 from django.shortcuts import render
-from django.views.generic import ListView, CreateView, DeleteView, UpdateView
+from django.views.generic import ListView, CreateView, DeleteView, UpdateView, FormView
 from note.models import Note, Author
-from .forms import NoteForm
+from .forms import NoteForm, TokenForm
 from django.urls import reverse
+
+from uuid import uuid4
+from django.shortcuts import redirect
 
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .forms import AuthorRegisterForm
+
+from django.core.mail import send_mail
+
+
+
 
 
 # NOTE views
@@ -101,6 +109,11 @@ class CustomLoginView(LoginView):
     template_name = 'user/login.html'
 
     def get_success_url(self):
+        user = self.request.user
+        time_until_block = None
+        subject = f"{user.username}, please confirm your email!"
+        message = f"{user.username}, your account would be blocked in {2} days {3} hours."
+        result = send_mail(subject, message, 'lam.djangotestmail@gmail.com', [user.email])
         return reverse('note:note-list')
 
 
@@ -118,5 +131,35 @@ class RegistrationView(CreateView):
         return reverse('login')
 
     def form_valid(self, form):
+        form.instance.token = uuid4()
         form.save()
         return super().form_valid(form)
+
+
+class ConfirmEmail(FormView):
+    # Model = Author
+    # fields = ['token']
+    form_class = TokenForm
+    template_name = 'user/confirm_email.html'
+    # queryset = Author.objects.all()
+
+    def form_valid(self, form):
+        author_instance = Author.objects.get(id=self.kwargs['pk'])
+        token = form.cleaned_data['token']
+        if author_instance.token == token:
+            author_instance.email_confirmed = True
+            author_instance.save()
+            return super().form_valid(form)
+        return redirect('confirm-email')
+
+    def get_success_url(self):
+        return reverse('note:note-list')
+
+    # def form_valid(self, form):
+    #     instance = form.instance
+    #     token = form.cleaned_data['token']
+    #     if instance.token == token:
+    #         instance.email_confirmed = True
+    #         form.save()
+    #         return super().form_valid(form)
+    #     return redirect('confirm-email')

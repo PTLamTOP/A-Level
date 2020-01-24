@@ -1,0 +1,10 @@
+{%  extends 'users/base.html' %}
+
+{% block title %}
+    Log-in
+{% endblock title %}
+
+{%  block content %}
+    <p><a href="{% url 'users:login' %}">Log-in</a></p>
+    <p>You have been logged out successfully.</p>
+{% endblock content %}

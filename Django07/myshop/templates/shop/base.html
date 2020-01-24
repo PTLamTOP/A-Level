@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>
+        {% block title %}
+            My shop
+        {% endblock %}
+    </title>
+</head>
+<body>
+
+    {% if user.is_authenticated %}
+        <h4><a href="{% url 'users:logout' %}">Log-out</a></h4>
+        <hr>
+        <h2>User: {{ user.username }}</h2>
+        <h2>Wallet: ${{ user.wallet }}</h2>
+        <h4><a href="{% url 'orders:ordered-list' %}">Your orders</a></h4>
+        {% if user.is_superuser %}
+            <h4><a href="{% url 'orders:returns-list' %}">Return requests</a></h4>
+            <button><a href="{% url 'shop:product-create' %}">Create product</a></button>
+        {% endif %}
+        <hr>
+        <div id="header">
+            {% with total_items=cart|length %}
+                {% if cart|length > 0 %}
+                    Your cart has
+                    <a href="{% url 'cart:cart_detail' %}">
+                        {{ total_items }} item{{ total_items|pluralize }},
+                        ${{ cart.get_total_price }}
+                    </a>
+                {% else %}
+                    Your cart is empty.
+                {% endif %}
+            {% endwith %}
+        </div>
+        <hr>
+    {% else %}
+        <p><a href="{% url 'users:login' %}">Log-in</a></p>
+        <p><a href="{% url 'users:register' %}">Register</a></p>
+    {% endif %}
+
+    <h3><a href="{% url 'shop:product_list' %}">Home page</a></h3>
+    <hr>
+
+
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                <li class="{{ message.tags }}">
+                    {{ message|safe }}
+                    <a href="{{ request.get_absolute_url }}" class="close">✖</a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    <div id="content">
+        {% block content %}
+        {% endblock %}
+    </div>
+</body>
+</html>

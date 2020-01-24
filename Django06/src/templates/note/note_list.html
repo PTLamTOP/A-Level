@@ -5,13 +5,24 @@
     <title>Home</title>
 </head>
 <body>
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    {% if user.email_confirmed == False %}
+        <a href="{% url 'confirm-email' user.id %}">Please confirm your email!!!</a>
+    {% endif %}
 
     {% if user.is_authenticated %}
         <p><a href="{% url 'logout' %}">Logout</a></p>
         <h3><a href="{% url 'note:shared-note-list' %}">Shared Notes</a></h3>
         <hr>
 
-        <h1>Welcome {{ user.username }}!</h1>
+        <h1>Welcome {{ user.username }} {{ user.id }}, {{ user.is_active }}!</h1>
         <hr>
 
        <div id="search">

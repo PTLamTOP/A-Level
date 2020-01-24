@@ -1,0 +1,35 @@
+{% extends 'shop/base.html' %}
+
+{% block title %}Orders{% endblock %}
+
+{% block content %}
+    <div class="order-info">
+        <h3>Ordered products</h3>
+        <ol>
+            {% for order in orders %}
+                <li>
+                    <span>{{ order }}, ${{ order.get_total_cost }}:</span>
+                    <ul>
+                        {% for item in order.items.all %}
+                            <li>
+                                <sp>{{ item.product }}, {{ item.quantity }}x, ${{ item.get_cost }}.
+                                {% if item.returned_item %}
+                                    <sp>Return request <strong>{{ item.returned_item.id }}</strong>
+                                        is reviewing by admin. Please wait.</sp>
+                                {% else %}
+                                <form action="{% url 'orders:return-create' item.id %}" method="post">
+                                    {% csrf_token %}
+                                    <input type="submit" value="Return">
+                                </form>
+                                {% endif %}
+                                </sp>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </li>
+                <br>
+            {% endfor %}
+        </ol>
+    </div>
+
+{% endblock content %}

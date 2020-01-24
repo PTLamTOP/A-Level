@@ -6,6 +6,9 @@ from django.utils.translation import gettext as _
 
 
 class Author(AbstractUser):
+    token = models.CharField(max_length=50, null=True)
+    email_confirmed = models.BooleanField(default=False)
+
     def __str__(self):
         return self.username
 
@@ -23,5 +26,4 @@ class Note(models.Model):
     def __str__(self):
         return "Author - {}, id - {}, created - {}".format(self.author.username, self.id, self.created_at)
 
-    # def get_absolute_url(self):
-    #     return reverse('note-detail', kwargs={'pk': self.id})
+

@@ -4,6 +4,10 @@ from django.contrib.auth.forms import UserCreationForm
 from .models import Author
 
 
+class TokenForm(forms.Form):
+    token = forms.CharField(max_length=50)
+
+
 class NoteForm(forms.ModelForm):
     class Meta:
         model = Note
@@ -13,4 +17,4 @@ class NoteForm(forms.ModelForm):
 class AuthorRegisterForm(UserCreationForm):
     class Meta:
         model = Author
-        fields = ['username', 'password1', 'password2']
+        fields = ['username', 'email', 'password1', 'password2']
