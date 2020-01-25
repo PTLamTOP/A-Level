@@ -2,6 +2,8 @@ from django.db import models
 from shop.models import Product
 from django.conf import settings
 
+from datetime import datetime, timedelta
+import pytz
 
 
 class Order(models.Model):
@@ -41,7 +43,7 @@ class OrderItem(models.Model):
                                 on_delete=models.CASCADE)
     price = models.DecimalField(max_digits=10, decimal_places=2)
     quantity = models.PositiveIntegerField(default=1)
-    is_returned = models.BooleanField(default=False, null=True, blank=True)
+    is_returned = models.CharField(max_length=200, default='')
 
     def __str__(self):
         return '{}'.format(self.id)
@@ -49,12 +51,21 @@ class OrderItem(models.Model):
     def get_cost(self):
         return self.price * self.quantity
 
+    def return_is_valid(self):
+        created_time = self.order.created
+        return_valid_time = created_time + timedelta(minutes=3)
+        if datetime.now(tz=pytz.UTC) <= return_valid_time:
+            return True
+        return False
+
 
 class ReturnRequest(models.Model):
     item = models.OneToOneField(OrderItem,
                                 on_delete=models.CASCADE,
                                 related_name='returned_item')
     created = models.DateTimeField(auto_now_add=True)
+
+
 
 
 

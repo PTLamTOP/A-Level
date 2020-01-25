@@ -14,9 +14,9 @@
                             <li>
                                 <sp>{{ item.product }}, {{ item.quantity }}x, ${{ item.get_cost }}.
                                 {% if item.returned_item %}
-                                    <sp>Return request <strong>{{ item.returned_item.id }}</strong>
-                                        is reviewing by admin. Please wait.</sp>
+                                    <sp>Return request <strong>#{{ item.returned_item.id }}</strong>.</sp>
                                 {% else %}
+                                <sp>{{ item.is_returned }}.</sp>
                                 <form action="{% url 'orders:return-create' item.id %}" method="post">
                                     {% csrf_token %}
                                     <input type="submit" value="Return">

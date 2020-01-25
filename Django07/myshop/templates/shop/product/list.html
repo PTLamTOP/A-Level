@@ -27,6 +27,14 @@
                         <input type="submit" value="Add to cart">
                     </form>
                 {% endif %}
+                <br>
+                {% if user.is_superuser %}
+                    <button><a href="{% url 'shop:product-update' product.id product.slug %}">Update product</a></button>
+                    <form action="{% url 'shop:product-delete' product.id product.slug %}" method="post">
+                        {% csrf_token %}
+                        <input type="submit" value="Delete product">
+                    </form>
+                {% endif %}
                 <hr>
             </div>
         {% endfor %}

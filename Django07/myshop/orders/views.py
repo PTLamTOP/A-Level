@@ -8,10 +8,6 @@ from .models import Order, OrderItem, ReturnRequest
 from django.views.generic import ListView, CreateView, View, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 
-
-from datetime import datetime, timedelta
-import pytz
-
 from django.contrib import messages
 
 
@@ -37,17 +33,18 @@ class OrderCreateView(LoginRequiredMixin, CreateView):
         order = form.save()
         self.extra_context.update({'order': order})
         for item in cart:
-            OrderItem.objects.create(order=order,
-                                     product=item['product'],
-                                     price=item['price'],
-                                     quantity=item['quantity'])
-            # уменьшаем деньги у пользователя и кол-во товрара на складе
-            user.wallet -= (item['price'] * item['quantity'])
-            user.save()
             product = item['product']
-            product.stock -= item['quantity']
-            product.save()
-        # очистка корзины
+            price = item['price']
+            quantity = item['quantity']
+            OrderItem.objects.create(order=order,
+                                     product=product,
+                                     price=price,
+                                     quantity=quantity)
+            # decrease money of user and amount of the product in stock
+            user.buy(price=price,
+                     quantity=quantity,
+                     product=product)
+        # clean cart
         cart.clear()
         return self.get_success_url()
 
@@ -64,29 +61,30 @@ class OrderListView(LoginRequiredMixin, ListView):
 
 
 class DeleteOrderItemView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+    """
+    Class view is responsible for deleting OrderItem if admin approve return
+    """
     model = OrderItem
     http_method_names = ['post']
 
     def post(self, request, *args, **kwargs):
         order_item = self.get_object()
         buyer = order_item.order.buyer
-        product = order_item.product
-        cost = order_item.price * order_item.quantity
-        # return money
-        buyer.wallet += cost
-        buyer.save()
-        # add to stock again
-        product.stock += order_item.quantity
-        product.save()
+        buyer.refund(order_item=order_item)
         return super().post(request, *args, **kwargs)
 
     def get_success_url(self):
         return reverse_lazy('orders:returns-list')
 
     def delete(self, request, *args, **kwargs):
+        """
+        Redefined the method to call self.object.delete() and check if Order is empty before self.get_success_url().
+
+        """
         self.object = self.get_object()
         order = self.object.order
         self.object.delete()
+        # if Order object does not have OrderItem (empty Order) -> delete Order
         if not order.items.all():
             order.delete()
         success_url = self.get_success_url()
@@ -102,6 +100,13 @@ class DeleteReturnRequestView(LoginRequiredMixin, UserPassesTestMixin, DeleteVie
     model = ReturnRequest
     http_method_names = ['post']
 
+    def delete(self, request, *args, **kwargs):
+        return_request = self.get_object()
+        order_item = return_request.item
+        order_item.is_returned = 'Your previous return request was denied by admin.'
+        order_item.save()
+        return super().delete(request, *args, **kwargs)
+
     def get_success_url(self):
         return reverse_lazy('orders:returns-list')
 
@@ -116,11 +121,10 @@ class CreateReturnView(LoginRequiredMixin, View):
 
     def post(self, request, *args, **kwargs):
         order_item = OrderItem.objects.get(id=self.kwargs['order_id'])
-        order_created_time = order_item.order.created
-        return_valid_time = order_created_time + timedelta(days=3)
-        if datetime.now(tz=pytz.UTC) > return_valid_time:
-            messages.error(request, f"Sorry, you could return an order only before {return_valid_time}")
+        if not order_item.return_is_valid():
+            messages.error(request, f"Sorry, it is too late to return the order item.")
             return redirect('orders:ordered-list')
+        order_item.is_returned = 'It is reviewing by admin. Please wait.'
         return_request = ReturnRequest()
         return_request.item = order_item
         return_request.save()
