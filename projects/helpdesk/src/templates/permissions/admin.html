@@ -1,0 +1,22 @@
+{% if user.is_superuser %}
+    {% if not request.approval and not request.denial %}
+        <form action="{% url 'requests:request-approve' request.pk request.slug%}" method="post">
+            {% csrf_token %}
+            <input class="btn btn-primary" type="submit" value="Approve">
+        </form>
+    {% endif %}
+
+    {% if request.status == 'RR' %}
+        <form action="{% url 'requests:request-delete' request.pk request.slug%}" method="post">
+            {% csrf_token %}
+            <input class="btn btn-primary" type="submit" value="Decline">
+        </form>
+    {% endif %}
+
+    {% if request.status == 'IP' %}
+        <form action="{% url 'requests:request-refuse' request.pk request.slug%}" method="post">
+            {% csrf_token %}
+            <input class="btn btn-primary" type="submit" value="Refuse">
+        </form>
+    {% endif %}
+{% endif %}

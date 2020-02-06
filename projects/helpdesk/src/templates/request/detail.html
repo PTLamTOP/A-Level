@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Request {{ request.id }}
+{% endblock title %}
+
+{% block content %}
+    <a href="{% url 'requests:request-list-home' %}">Home</a>
+
+    <div id="main">
+        <h1>Request id #{{ request.id }}</h1>
+        <div class="request">
+            <p><strong>ID</strong>: {{ request.id }}</p>
+            <p><strong>Subject</strong>: {{ request.subject }}</p>
+            <p><strong>Text</strong>: {{ request.text }}</p>
+            <p><strong>Importance</strong>: {{ request.get_importance_display }}</p>
+            <p><strong>Status</strong>: {{ request.get_status_display }}</p>
+            <p><strong>Created on</strong>: {{ request.created }}</p>
+            <p>
+                {% if request.status == 'RR' %}
+                    <strong>Re Request on</strong>: {{ request.updated }}
+                {% endif %}
+            </p>
+            <hr>
+            {% if request.refusal %}
+                <p><strong>Admin's comment</strong>: {{ request.refusal.comment }}</p>
+                <p><strong>Refusal date</strong>: {{ request.refusal.created }}</p>
+            {% elif request.denial %}
+                <p><strong>Admin's comment</strong>: {{ request.denial.comment }}</p>
+                <p><strong>Denial date</strong>: {{ request.denial.created }}</p>
+            {% elif request.approval %}
+                <p><strong>Approval date</strong>: {{ request.approval.created }}</p>
+            {% endif %}
+        </div>
+        {% include 'permissions/admin.html' %}
+    </div>
+
+    <br>
+    <div id="comment">
+        <h2>Comments</h2>
+        {% for comment in comments %}
+            <span><strong>{{ comment.user.username }}</strong>{% if comment.user.is_superuser %} (Admin){% endif %}, {{ comment.created_on }}</span>
+            <span>{{ comment.body|linebreaks }}</span>
+        {% empty %}
+            <p>There is not any comment yet...</p>
+        {% endfor %}
+        {% if request.status == 'IP' %}
+            <form action="{% url 'requests:comment-create' request.pk request.slug %}" method="post">
+                {% csrf_token %}
+                {{ comment_form.as_p }}
+                <input type="hidden" name="request_id" value="{{ request.id }}">
+                <input type="submit" value="Comment">
+            </form>
+        {% endif %}
+    </div>
+{% endblock content %}

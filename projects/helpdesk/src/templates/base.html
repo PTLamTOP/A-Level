@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+{% include 'head.html' %}
+<body>
+
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                <li class="{{ message.tags }}">
+                    {{ message|safe }}
+                    <a href="{{ request.get_absolute_url }}" class="close">✖</a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    {% include 'navigation.html' %}
+
+    <div>
+        {% block content %}
+        {% endblock %}
+    </div>
+
+    {%  include 'js.html' %}
+</body>
+</html>

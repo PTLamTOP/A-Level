@@ -1,0 +1,12 @@
+{% if not user.is_superuser %}
+    {% if request.status == 'IP' %}
+        <a class="btn btn-primary" role="button" href="{% url 'requests:request-update' request.pk request.slug %}">Update</a>
+    {% endif %}
+
+    {% if request.status == 'RF' %}
+        <form action="{% url 'requests:request-rerequest' request.pk request.slug%}" method="post">
+            {% csrf_token %}
+            <input class="btn btn-primary" type="submit" value="Re Request">
+        </form>
+    {% endif %}
+{% endif %}

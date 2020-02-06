@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    {% if user.is_superuser %}
+        <a href="{%  url 'requests:rerequest-list' %}">Re Requests</a>
+    {% endif %}
+    <hr>
+
+    <div id="main">
+        {% if user.is_superuser == False %}
+            <h1>Create a new request</h1>
+            <form action="{% url 'requests:request-create' %}" method="post">
+                {% csrf_token %}
+                {{ request_create_form.as_p }}
+                <input type="submit" value="Create">
+            </form>
+        {% endif %}
+
+
+        <h1>Requests</h1>
+        {% for request in requests %}
+            <div class="request">
+                <a href="{{ request.get_absolute_url }}">
+                    <p>Subject: {{ request.subject }}</p>
+                    <p>Importance: {{ request.get_importance_display }}</p>
+                    <p>Status: {{ request.get_status_display }}</p>
+                </a>
+                {% include 'permissions/admin.html' with request=request %}
+                {% include 'permissions/user.html' %}
+            </div>
+            <hr>
+        {% empty %}
+            <p>There is not any request...</p>
+        {% endfor %}
+    </div>
+
+    {% include "pagination.html" with page=page_obj paginator_name='Request' %}
+
+{% endblock content %}
