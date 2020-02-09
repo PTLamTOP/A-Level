@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div id="main">
+        {% if user.is_authenticated %}
+            <h1>Create a new card</h1>
+            <form action="{% url 'tasks:card-create' %}" method="post">
+                {% csrf_token %}
+                {{ card_create_form.as_p }}
+                <input type="submit" value="Create">
+            </form>
+        {% endif %}
+        <hr>
+        <br>
+        <h1>Tasks</h1>
+        <hr>
+        {% for card in cards %}
+            <hr>
+            <a href="{{ card.get_absolute_url }}">
+                <p>{{ card.text | truncatewords:10 }}</p>
+                <p>on {% if  card.executor %}{{ card.executor.username }}{% else %}Nobody{% endif %}</p>
+            </a>
+            <hr>
+        {% empty %}
+            <p>There is not any card...</p>
+        {% endfor %}
+    </div>
+
+{% endblock content %}

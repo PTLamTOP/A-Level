@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Task Detail
+{% endblock title %}
+
+{% block content %}
+    <a href="{% url 'tasks:card-list' %}">Home</a>
+
+    <div id="main">
+        <h1>Card id #{{ card.id }}</h1>
+        <div class="card">
+            <span>Was created by <strong>{{ card.creator.username }}</strong> on {{ card.created }}</span>
+            <span>Current status is <strong>{{ card.get_status_display }}.</strong></span>
+            <span>Current executor is <strong>{% if  card.executor %}{{ card.executor.username }}{% else %}Nobody{% endif %}</strong>.</span>
+            {% if user == card.creator and not card.executor and not user.is_superuser %}
+                <form action="{% url 'tasks:card-become-executor' card.pk card.slug %}" method="post">
+                    {% csrf_token %}
+                    <input type="submit" value="Become an executor">
+                </form>
+            {% endif %}
+            <br>
+
+            {% if user == card.executor %}
+                {% if card.status in 'IQ, RD' %}
+                    <form action="{% url 'tasks:card-change-status' card.pk card.slug %}" method="post">
+                        {% csrf_token %}
+                        <input type="submit" name="move" value="Previous">
+                    </form>
+                {% endif %}
+            {% else %}
+                {% if card.status == 'DN' %}
+                    <form action="{% url 'tasks:card-change-status' card.pk card.slug %}" method="post">
+                        {% csrf_token %}
+                        <input type="submit" name="move" value="Previous">
+                    </form>
+                {% endif %}
+            {% endif %}
+            <a href="{% url 'tasks:card-update' card.pk card.slug %}">{{ card.text|linebreaks }}</a>
+             {% if user == card.executor %}
+                 {% if card.status in 'NW, IP, IQ' %}
+                    <form action="{% url 'tasks:card-change-status' card.pk card.slug %}" method="post">
+                        {% csrf_token %}
+                        <input type="submit" name="move" value="Next">
+                    </form>
+                 {% endif %}
+             {% else %}
+                 {% if card.status == 'RD' %}
+                    <form action="{% url 'tasks:card-change-status' card.pk card.slug %}" method="post">
+                        {% csrf_token %}
+                        <input type="submit" name="move" value="Next">
+                    </form>
+                 {% endif %}
+             {% endif %}
+            <br>
+
+            {% if user.is_superuser %}
+                <form action="{% url 'tasks:card-delete' card.pk card.slug %}" method="post">
+                    {% csrf_token %}
+                    <input type="submit" value="Delete">
+                </form>
+            {% endif %}
+        </div>
+    </div>
+
+{% endblock content %}

@@ -12,6 +12,7 @@ from rest_framework import viewsets, mixins
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 
+
 class RequestRetrieveViewSet(viewsets.GenericViewSet,
                              mixins.ListModelMixin):
     """
@@ -22,6 +23,7 @@ class RequestRetrieveViewSet(viewsets.GenericViewSet,
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['importance', ]
     permission_classes = [IsAuthenticated & IsAdminUser]
+
 
 """
 ADMIN FUNCTIONALITIES
@@ -126,6 +128,7 @@ class ReRequestListView(UserPassesTestMixin, ListView):
     def test_func(self):
         if self.request.user.is_superuser:
             return True
+
 
 """
 USER FUNCTIONALITIES

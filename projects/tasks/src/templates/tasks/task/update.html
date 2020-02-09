@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Task Update
+{% endblock title %}
+
+{% block content %}
+    <a href="{% url 'tasks:card-list' %}">Home</a>
+
+    <div id="main">
+        <h1>Card id #{{ card.id }}</h1>
+        <form method="post">
+            {% csrf_token %}
+            {% if user.is_superuser %}
+                {{ form.executor|linebreaks }}
+            {% endif %}
+            {{ form.text }}
+            <input type="submit" value="Update">
+        </form>
+    </div>
+
+{% endblock content %}
