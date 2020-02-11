@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% load multiply %}
+
+{% block content %}
+    <div id="main">
+        <h2>Total cost: ${{ total_cost }}</h2>
+        <br>
+        <h2>Tickets</h2>
+        {% for session in buyer_sessions %}
+            <div class="session">
+                <p>Session: {{ session }}</p>
+                <p>Price for ticket: {{ session.price }}</p>
+                <p>Ticket amount: {{ session.num_tickets }}</p>
+                <p>Cost: ${{ session.price | multiply:session.num_tickets  }}</p>
+            </div>
+            <hr>
+        {% empty %}
+            <p>There is not any ticket...</p>
+        {% endfor %}
+    </div>
+
+{% endblock content %}

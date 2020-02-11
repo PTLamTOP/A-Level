@@ -1,0 +1,36 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+{% include 'head.html' %}
+<body>
+
+
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                <li class="{{ message.tags }}">
+                    {{ message|safe }}
+                    <a href="{{ request.get_absolute_url }}" class="close">✖</a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+
+    {% include 'navigation.html' %}
+
+    {% if user.is_authenticated  %}
+        <h1>Welcome {{ user.username }} {% if user.is_superuser %}(Admin){% endif %}!</h1>
+    {% endif %}
+
+    <div>
+        {% block content %}
+        {% endblock content %}
+    </div>
+
+    {%  include 'js.html' %}
+    {% block js %}
+    {% endblock js %}
+</body>
+</html>

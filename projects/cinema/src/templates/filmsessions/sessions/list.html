@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% load today %}
+{% load tomorrow %}
+
+{% block content %}
+    <div id="main">
+        <form action="." method="get">
+            By Start Time<select name="sort">
+                <option disabled selected value>-- select an option --</option>
+                <option value ="time_from">A-Z</option>
+                <option value ="-time_from">Z-A</option>
+            </select>
+            By Price<select name="sort">
+                <option disabled selected value>-- select an option --</option>
+                <option value ="price">A-Z</option>
+                <option value ="-price">Z-A</option>
+            </select>
+            By Day<select name="date">
+                <option disabled selected value>All</option>
+                <option value ="{% today %}">Today</option>
+                <option value ="{% tomorrow %}">Tomorrow</option>
+            </select>
+            <button type="submit" class="btn btn-sm btn-primary btn-raised mr-3">Sort</button>
+        </form>
+
+        <h1>Sessions</h1>
+        {% for session in sessions %}
+            <div class="session">
+                <img src="{{ session.film.picture.url }}" width="300px" height="300px">
+                <p>Name: {{ session.film.title }}</p>
+                <p>Release Date: {{ session.film.release_year }}</p>
+                <p>From {{ session.time_from }} to {{ session.time_to }}</p>
+                <p>Hall: {{ session.hall.name }}</p>
+                <p>Available seat{{ session.available_seats|pluralize }}: {{ session.available_seats }}</p>
+                <p>Price for ticket: ${{ session.price }}</p>
+
+                <form action="{% url 'film-sessions:ticket-create' %}" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="session_id" value="{{ session.id }}">
+                    <input type="number" min="0" name="quantity" value="1">
+                    <input type="submit" value="Buy">
+                </form>
+
+                <a href="{% url 'film-sessions:session-update' session.pk %}">Update</a>
+            </div>
+            <hr>
+        {% empty %}
+            <p>There is not any session...</p>
+        {% endfor %}
+    </div>
+
+{% endblock content %}

@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div id="main">
+        <h1>Create Session:</h1>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <input type="submit" value="Create">
+        </form>
+    </div>
+{% endblock content %}
+
+{% block js %}
+    <script type="text/javascript">
+        $('#id_time_from').datetimepicker({ footer: true, modal: true, format: 'yyyy-mm-dd HH:MM' });
+        $('#id_time_to').datetimepicker({ footer: true, modal: true, format: 'yyyy-mm-dd HH:MM' });
+    </script>
+{% endblock js %}

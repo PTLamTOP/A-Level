@@ -3,13 +3,17 @@ from django.conf import settings
 from django.urls import reverse
 from django.utils.text import slugify
 
+from django_fields import DefaultStaticImageField
+
 
 class Hall(models.Model):
     name = models.CharField(max_length=100)
     seats = models.PositiveIntegerField()
+    created_on = models.DateTimeField(auto_now_add=True, blank=True, null=True)
+    updated_on = models.DateTimeField(auto_now_add=True, blank=True, null=True)
 
     def __str__(self):
-        return f"Hall {self.name}"
+        return f"Hall '{self.name}'"
 
 
 class Film(models.Model):
@@ -38,9 +42,9 @@ class Film(models.Model):
         (WESTERNS, 'Westerns'),
     )
     title = models.CharField(max_length=200)
-    picture = models.ImageField(upload_to='pictures/%Y/%m/%d',
-                                height_field=500,
-                                width_field=500)
+    picture = DefaultStaticImageField(upload_to='pictures/%Y/%m/%d',
+                                      blank=True,
+                                      default_image_path=settings.DEFAULT_IMAGE_PATH)
     genre = models.CharField(choices=GENRES_CHOICES, max_length=2)
     description = models.TextField()
     release_year = models.DateField()
@@ -53,7 +57,7 @@ class Film(models.Model):
         return f"Film '{self.title}'"
 
 
-class Session(models.Model):
+class FilmSession(models.Model):
     film = models.ForeignKey(Film,
                              related_name='sessions',
                              on_delete=models.CASCADE)
@@ -65,7 +69,7 @@ class Session(models.Model):
     time_to = models.DateTimeField()
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True)
-    available_seats = models.PositiveIntegerField()
+    available_seats = models.PositiveIntegerField(blank=True)
 
     def save(self, *args, **kwargs):
         """
@@ -75,12 +79,15 @@ class Session(models.Model):
             self.available_seats = self.hall.seats
         super().save(*args, **kwargs)
 
+    def update(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+
     def __str__(self):
-        return f"Session of file '{self.film.title}' at {self.time_from}"
+        return f"Session of film '{self.film.title}' at {self.time_from}"
 
 
 class Ticket(models.Model):
-    session = models.ForeignKey(Session,
+    session = models.ForeignKey(FilmSession,
                                 related_name='tickets',
                                 on_delete=models.CASCADE)
     buyer = models.ForeignKey(settings.AUTH_USER_MODEL,

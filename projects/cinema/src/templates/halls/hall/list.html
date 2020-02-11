@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div id="main">
+        <h1>Sessions</h1>
+        {% for hall in halls %}
+            <div class="session">
+                <p>Name: {{ hall.name }}</p>
+                <p>Available seats: {{ hall.seats }}</p>
+                <a href="{% url 'film-sessions:hall-update' hall.pk %}">Update</a>
+            </div>
+            <hr>
+        {% empty %}
+            <p>There is not any hall...</p>
+        {% endfor %}
+    </div>
+
+{% endblock content %}
