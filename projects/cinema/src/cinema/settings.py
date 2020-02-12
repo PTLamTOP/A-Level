@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
 import os
+from django.contrib.messages import constants as message_constants
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -38,6 +39,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'filmsessions.apps.FilmsessionsConfig',
+    'halls.apps.HallsConfig',
+    'tickets.apps.TicketsConfig',
+    'profiles.apps.ProfilesConfig',
 
     # all-auth
     'django.contrib.sites',
@@ -51,6 +55,7 @@ INSTALLED_APPS = [
     # rest
     'rest_framework',
     'django_filters',
+    'rest_framework.authtoken',
 ]
 
 # all-auth
@@ -165,7 +170,16 @@ ACCOUNT_EMAIL_VERIFICATION = 'none'
 
 # for filtering request list by importance and pagination
 REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
+    ],
     'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 5
 }
+
+# override message tags
+MESSAGE_TAGS = {message_constants.ERROR: 'warning',
+                message_constants.INFO: 'info'}

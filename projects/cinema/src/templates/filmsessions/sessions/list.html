@@ -3,26 +3,35 @@
 {% load tomorrow %}
 
 {% block content %}
-    <div id="main">
-        <form action="." method="get">
-            By Start Time<select name="sort">
-                <option disabled selected value>-- select an option --</option>
-                <option value ="time_from">A-Z</option>
-                <option value ="-time_from">Z-A</option>
-            </select>
-            By Price<select name="sort">
-                <option disabled selected value>-- select an option --</option>
-                <option value ="price">A-Z</option>
-                <option value ="-price">Z-A</option>
-            </select>
-            By Day<select name="date">
-                <option disabled selected value>All</option>
-                <option value ="{% today %}">Today</option>
-                <option value ="{% tomorrow %}">Tomorrow</option>
-            </select>
-            <button type="submit" class="btn btn-sm btn-primary btn-raised mr-3">Sort</button>
-        </form>
 
+    {% include 'navigation.html' %}
+
+    <div id="main">
+        <!-- sorting data form -->
+        <div>
+            <h3>Session sorting</h3>
+            <form action="." method="get">
+                <p>By Start Time: <select name="sort" class="form-control">
+                    <option disabled selected value>-- select an option --</option>
+                    <option value ="time_from">A-Z</option>
+                    <option value ="-time_from">Z-A</option>
+                </select></p>
+                <p>By Price: <select name="sort" class="form-control">
+                    <option disabled selected value>-- select an option --</option>
+                    <option value ="price">A-Z</option>
+                    <option value ="-price">Z-A</option>
+                </select></p>
+                <p>By Day: <select name="date" class="form-control">
+                    <option disabled selected value>-- select an option --</option>
+                    <option value ="{% today %}">Today</option>
+                    <option value ="{% tomorrow %}">Tomorrow</option>
+                </select></p>
+                <button type="submit" class="btn btn-sm btn-primary btn-raised mr-3">Sort</button>
+            </form>
+        </div>
+        <br>
+
+        <!-- Session's list-->
         <h1>Sessions</h1>
         {% for session in sessions %}
             <div class="session">
@@ -34,14 +43,16 @@
                 <p>Available seat{{ session.available_seats|pluralize }}: {{ session.available_seats }}</p>
                 <p>Price for ticket: ${{ session.price }}</p>
 
-                <form action="{% url 'film-sessions:ticket-create' %}" method="post">
-                    {% csrf_token %}
-                    <input type="hidden" name="session_id" value="{{ session.id }}">
-                    <input type="number" min="0" name="quantity" value="1">
-                    <input type="submit" value="Buy">
-                </form>
-
-                <a href="{% url 'film-sessions:session-update' session.pk %}">Update</a>
+                {% if user.is_superuser %}
+                    <a class="btn btn-primary" role="button" href="{% url 'film-sessions:session-update' session.pk %}">Update</a>
+                {% else %}
+                    <form action="{% url 'tickets:ticket-create' %}" method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="session_id" value="{{ session.id }}">
+                        <input type="number" min="0" name="quantity" value="1">
+                        <input type="submit" value="Buy" class="btn btn-primary">
+                    </form>
+                {% endif %}
             </div>
             <hr>
         {% empty %}

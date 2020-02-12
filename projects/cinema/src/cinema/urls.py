@@ -21,10 +21,15 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('allauth.urls')),
-    path('sessions/', include('filmsessions.urls', namespace='film-sessions')),
+    path('', include('filmsessions.urls', namespace='film-sessions')),
     path('halls/', include('halls.urls', namespace='halls')),
     path('tickets/', include('tickets.urls', namespace='tickets'))
 ]
+
+urlpatterns += [
+    path('api-auth/', include('rest_framework.urls')),
+]
+
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

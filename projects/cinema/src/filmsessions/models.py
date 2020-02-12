@@ -1,19 +1,13 @@
 from django.db import models
 from django.conf import settings
-from django.urls import reverse
-from django.utils.text import slugify
 
 from django_fields import DefaultStaticImageField
 
+from halls.models import Hall
 
-class Hall(models.Model):
-    name = models.CharField(max_length=100)
-    seats = models.PositiveIntegerField()
-    created_on = models.DateTimeField(auto_now_add=True, blank=True, null=True)
-    updated_on = models.DateTimeField(auto_now_add=True, blank=True, null=True)
+from django.contrib import messages
 
-    def __str__(self):
-        return f"Hall '{self.name}'"
+import pytz
 
 
 class Film(models.Model):
@@ -82,18 +76,59 @@ class FilmSession(models.Model):
     def update(self, *args, **kwargs):
         super().save(*args, **kwargs)
 
+    def update_seats_amount(self, new_amount, *args, **kwargs):
+        self.available_seats = new_amount
+        super().save(*args, **kwargs)
+
+    def has_enough_seats(self, quantity, request):
+        if self.available_seats == 0:
+            messages.add_message(request, messages.INFO, f'Sorry, there is not any ticket.')
+            return False
+        elif self.available_seats >= quantity:
+            messages.add_message(request, messages.SUCCESS, f'You have bought {quantity} tickets.')
+            return True
+        messages.add_message(request, messages.INFO, f'Sorry, there are only {self.available_seats} tickets.')
+
+    def check_time_with_session_time(self, request, time_from, time_to):
+        """
+        :param time_from: start time of a new session
+        :param time_to: end time of a new session
+        :return: True if test was passed
+
+        Test:
+            1) (time_from < self.time_from and time_to < self.time_from) - ___new___|session_time|___ new session
+            should be before existing session
+                OR
+            2) (time_from > self.time_to and time_to > self.time_to) - ____|session_time|___new___ new session should
+            be after existing session
+        """
+        if (time_from < self.time_from and time_to < self.time_from) or (time_from > self.time_to and time_to > self.time_to):
+            return True
+        messages.add_message(request, messages.ERROR,
+                             f'ERROR: The session was not created, as there is already a session during this time: {time_from}-{time_to}!')
+
+    @staticmethod
+    def check_valid_sessiontime(request, time_from, time_to, film):
+        """
+        :param time_from: start time of a new session
+        :param time_to: end time of a new session
+        :param film: film object which will be in a new session
+        :return: True if test was passed
+
+        Test:
+            1) (time_to > time_from) - end time should be more than start time;
+            2) (time_from.date() >= film.period_from and time_to.date() <= film.period_to) - session
+            date should be in between film's screening time;
+        """
+        if (time_to > time_from):
+            if (time_from.date() >= film.period_from and time_to.date() <= film.period_to):
+                return True
+            else:
+                messages.add_message(request, messages.ERROR,
+                                     f"ERROR: The session was not created, as session's time is out of film's screening time!")
+                return False
+        messages.add_message(request, messages.ERROR,
+                             f"ERROR: The session was not created, as session's start time is less/equal than end time!")
+
     def __str__(self):
         return f"Session of film '{self.film.title}' at {self.time_from}"
-
-
-class Ticket(models.Model):
-    session = models.ForeignKey(FilmSession,
-                                related_name='tickets',
-                                on_delete=models.CASCADE)
-    buyer = models.ForeignKey(settings.AUTH_USER_MODEL,
-                              related_name='tickets',
-                              on_delete=models.CASCADE)
-    created_on = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return f"Ticket of film '{self.session.film.title}' at {self.session.time_from}"

@@ -2,12 +2,12 @@
 
 {% block content %}
     <div id="main">
-        <h1>Sessions</h1>
+        <h1>Halls</h1>
         {% for hall in halls %}
             <div class="session">
                 <p>Name: {{ hall.name }}</p>
                 <p>Available seats: {{ hall.seats }}</p>
-                <a href="{% url 'film-sessions:hall-update' hall.pk %}">Update</a>
+                <a class="btn btn-primary" role="button" href="{% url 'halls:hall-update' hall.pk %}">Update</a>
             </div>
             <hr>
         {% empty %}

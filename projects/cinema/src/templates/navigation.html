@@ -1,14 +1,16 @@
 <nav>
     {% if user.is_authenticated %}
-        <p><a href="{% url 'account_logout' %}">Logout</a></p>
-        <p><a href="{% url 'film-sessions:ticket-list' %}">My Tickets</a></p>
-        <p><a href="{% url 'film-sessions:film-create' %}">Create New Film</a></p>
-        <p><a href="{% url 'film-sessions:hall-create' %}">Create New Hall</a></p>
-        <p><a href="{% url 'film-sessions:session-create' %}">Create New Session</a></p>
-        <p><a href="{% url 'film-sessions:hall-list' %}">Hall list</a></p>
+        {% if not user.is_superuser %}
+            <p><a href="{% url 'tickets:ticket-list' %}">My Tickets</a></p>
+        {% else %}
+            <p><a href="{% url 'halls:hall-list' %}">Hall list</a></p>
+            <p><a href="{% url 'halls:hall-create' %}">Create New Hall</a></p>
+            <p><a href="{% url 'film-sessions:film-create' %}">Create New Film</a></p>
+            <p><a href="{% url 'film-sessions:session-create' %}">Create New Session</a></p>
+        {% endif %}
     {% else %}
         <p><a href="{% url 'account_login' %}">Login</a></p>
         <p><a href="{% url 'account_signup' %}">Signup</a></p>
-        <p><a href="{% url 'film-sessions:session-list' %}">Home</a></p>
     {% endif %}
 </nav>
+<hr>

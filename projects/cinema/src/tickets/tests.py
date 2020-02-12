@@ -1,3 +1,8 @@
 from django.test import TestCase
+from django.contrib.auth.mixins import UserPassesTestMixin
 
-# Create your tests here.
+
+class NotAdminTestMixin(UserPassesTestMixin):
+    def test_func(self):
+        return not self.request.user.is_superuser
+

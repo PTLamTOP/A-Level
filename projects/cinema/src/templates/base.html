@@ -5,24 +5,28 @@
 {% include 'head.html' %}
 <body>
 
-
     {% if messages %}
         <ul class="messages">
             {% for message in messages %}
-                <li class="{{ message.tags }}">
-                    {{ message|safe }}
-                    <a href="{{ request.get_absolute_url }}" class="close">✖</a>
-                </li>
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    <strong>{{ message.tags|upper  }}: </strong>{{ message|safe }}
+                    <a href="{{ request.get_absolute_url }}" class="close">
+                        <span aria-hidden="true">&times;</span>
+                    </a>
+                </div>
             {% endfor %}
         </ul>
+        <hr>
     {% endif %}
-
-
-    {% include 'navigation.html' %}
 
     {% if user.is_authenticated  %}
-        <h1>Welcome {{ user.username }} {% if user.is_superuser %}(Admin){% endif %}!</h1>
+        <h1>Welcome {{ user.username }}{% if user.is_superuser %} (Admin){% endif %}!</h1>
+        <p><a href="{% url 'account_logout' %}">Logout</a></p>
+        <hr>
+        <hr>
     {% endif %}
+
+    <p><a href="{% url 'film-sessions:session-list' %}">Home</a></p>
 
     <div>
         {% block content %}
