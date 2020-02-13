@@ -54,9 +54,9 @@ class HallUpdateView(AdminTestMixin, UpdateView):
 
     def post(self, request, *args, **kwargs):
         hall_obj = Hall.objects.get(pk=kwargs.get('pk'))
+        new_seats_amount = int(request.POST.get('seats'))
         if hall_obj.can_be_update():  # check if tickets to the hall were not purchased.
             for s in hall_obj.sessions.all():  # updated attribute 'available_seats' of all sessions in the hall
-                new_seats_amount = int(request.POST.get('seats'))
                 s.update_seats_amount(new_amount=new_seats_amount)
             messages.add_message(request, messages.SUCCESS, f'The hall was updated!')
             return super().post(request, *args, **kwargs)

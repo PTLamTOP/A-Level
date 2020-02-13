@@ -10,24 +10,7 @@ from .models import FilmSession, Film
 
 from django.views.generic import ListView, CreateView, UpdateView
 
-from .serializer import FilmSessionSerializer
-from rest_framework import viewsets, mixins
-from rest_framework.permissions import IsAuthenticated, IsAdminUser
-
-from .filter import FilmSessionFilter
-
 from .tests import AdminTestMixin
-
-
-class FilmSessionRetrieveViewSet(viewsets.GenericViewSet,
-                                 mixins.ListModelMixin):
-    """
-    Serializer for retrieving Requests
-    """
-    queryset = FilmSession.objects.all()
-    serializer_class = FilmSessionSerializer
-    filter_class = FilmSessionFilter
-    permission_classes = [IsAuthenticated & IsAdminUser]
 
 
 class FilmSessionsListView(ListView):

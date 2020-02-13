@@ -7,7 +7,7 @@ from halls.models import Hall
 
 from django.contrib import messages
 
-import pytz
+from rest_framework import serializers
 
 
 class Film(models.Model):
@@ -121,7 +121,7 @@ class FilmSession(models.Model):
             date should be in between film's screening time;
         """
         if (time_to > time_from):
-            if (time_from.date() >= film.period_from and time_to.date() <= film.period_to):
+            if ((time_from.date() >= film.period_from) and (time_to.date() <= film.period_to)):
                 return True
             else:
                 messages.add_message(request, messages.ERROR,
@@ -129,6 +129,62 @@ class FilmSession(models.Model):
                 return False
         messages.add_message(request, messages.ERROR,
                              f"ERROR: The session was not created, as session's start time is less/equal than end time!")
+
+    def api_check_time_with_session_time(self, request, time_from, time_to):
+        """
+        :param time_from: start time of a new session
+        :param time_to: end time of a new session
+        :return: True if test was passed
+
+        Test:
+            1) (time_from < self.time_from and time_to < self.time_from) - ___new___|session_time|___ new session
+            should be before existing session
+                OR
+            2) (time_from > self.time_to and time_to > self.time_to) - ____|session_time|___new___ new session should
+            be after existing session
+        """
+        if (time_from < self.time_from and time_to < self.time_from) or (
+                time_from > self.time_to and time_to > self.time_to):
+            return True
+        raise serializers.ValidationError(f'ERROR: The session was not created/updated, '
+                                          f'as there is already a session during this time: {time_from}-{time_to}!')
+
+    @staticmethod
+    def api_check_valid_sessiontime(request, time_from, time_to, film):
+        """
+        :param time_from: start time of a new session
+        :param time_to: end time of a new session
+        :param film: film object which will be in a new session
+        :return: True if test was passed
+
+        Test:
+            1) (time_to > time_from) - end time should be more than start time;
+            2) (time_from.date() >= film.period_from and time_to.date() <= film.period_to) - session
+            date should be in between film's screening time;
+        """
+        if (time_to > time_from):
+            if (time_from.date() >= film.period_from and time_to.date() <= film.period_to):
+                return True
+            else:
+                raise serializers.ValidationError(f"ERROR: The session was not created/updated, "
+                                                  f"as session's time is out of film's screening time!")
+        raise serializers.ValidationError(f"ERROR: The session was not created/updated, "
+                                          f"as session's start time is less/equal than end time!")
+
+    @classmethod
+    def api_create_session_validation(cls, request, time_from, time_to, film_obj, all_hall_sessions):
+        if cls.api_check_valid_sessiontime(request=request, time_from=time_from,
+                                            time_to=time_to, film=film_obj):
+            if all(s.api_check_time_with_session_time(request=request,
+                                                      time_from=time_from,
+                                                      time_to=time_to) for s in all_hall_sessions):
+                return True
+
+    def api_update_validate(self):
+        if not self.tickets.all():
+            return True
+        raise serializers.ValidationError(f"ERROR: The session can not be updated, "
+                                          f"as a ticket was already purchased for the session!")
 
     def __str__(self):
         return f"Session of film '{self.film.title}' at {self.time_from}"
