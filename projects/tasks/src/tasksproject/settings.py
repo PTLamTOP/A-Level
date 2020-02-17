@@ -73,6 +73,8 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
+    # please login middleware
+    'tasks.middleware.PleaseLoginMiddleware',
     # custom middleware logout if last action was 5 mins ago
     'tasks.middleware.LastActionCheckMiddleware',
 ]
