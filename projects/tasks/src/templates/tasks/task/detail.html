@@ -4,15 +4,22 @@
     Task Detail
 {% endblock title %}
 
+{% block navigation %}
+  {% include 'navigation.html' %}
+{% endblock navigation %}
+
+
 {% block content %}
-    <a href="{% url 'tasks:card-list' %}">Home</a>
 
     <div id="main">
+        <!-- Card's detail -->
         <h1>Card id #{{ card.id }}</h1>
         <div class="card">
             <span>Was created by <strong>{{ card.creator.username }}</strong> on {{ card.created }}</span>
             <span>Current status is <strong>{{ card.get_status_display }}.</strong></span>
             <span>Current executor is <strong>{% if  card.executor %}{{ card.executor.username }}{% else %}Nobody{% endif %}</strong>.</span>
+
+            <!-- Become card's executor -->
             {% if user == card.creator and not card.executor and not user.is_superuser %}
                 <form action="{% url 'tasks:card-become-executor' card.pk card.slug %}" method="post">
                     {% csrf_token %}
@@ -21,6 +28,7 @@
             {% endif %}
             <br>
 
+            <!-- Change card's status to NEXT -->
             {% if user == card.executor %}
                 {% if card.status in 'IQ, RD' %}
                     <form action="{% url 'tasks:card-change-status' card.pk card.slug %}" method="post">
@@ -28,7 +36,7 @@
                         <input type="submit" name="move" value="Previous">
                     </form>
                 {% endif %}
-            {% else %}
+            {% elif user.is_superuser %}
                 {% if card.status == 'DN' %}
                     <form action="{% url 'tasks:card-change-status' card.pk card.slug %}" method="post">
                         {% csrf_token %}
@@ -36,7 +44,15 @@
                     </form>
                 {% endif %}
             {% endif %}
-            <a href="{% url 'tasks:card-update' card.pk card.slug %}">{{ card.text|linebreaks }}</a>
+
+            <!-- Update cards' 'text' and 'executor' fields -->
+            {% if user.is_superuser or user == card.creator or user == card.executor %}
+                <a href="{% url 'tasks:card-update' card.pk card.slug %}">{{ card.text|linebreaks }}</a>
+            {% else %}
+                <p>{{ card.text|linebreaks }}</p>
+            {% endif %}
+
+            <!-- Change card's status to PREVIOUS -->
              {% if user == card.executor %}
                  {% if card.status in 'NW, IP, IQ' %}
                     <form action="{% url 'tasks:card-change-status' card.pk card.slug %}" method="post">
@@ -54,6 +70,7 @@
              {% endif %}
             <br>
 
+            <!-- Delete card -->
             {% if user.is_superuser %}
                 <form action="{% url 'tasks:card-delete' card.pk card.slug %}" method="post">
                     {% csrf_token %}

@@ -1,5 +1,10 @@
 <nav>
     {% if user.is_authenticated %}
         <p><a href="{% url 'account_logout' %}">Logout</a></p>
+    {% else %}
+        <p><a href="{% url 'account_login' %}">Login</a></p>
+        <p><a href="{% url 'account_signup' %}">Signup</a></p>
     {% endif %}
+    <a href="{% url 'tasks:card-list-home' %}">Home</a>
+    <hr>
 </nav>

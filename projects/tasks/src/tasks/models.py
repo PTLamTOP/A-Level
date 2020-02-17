@@ -45,5 +45,29 @@ class Card(models.Model):
         return reverse('tasks:card-detail',
                        kwargs={'pk': self.pk, 'slug': self.slug})
 
+    def notadmin_card_status_change(self, request, move_index):
+        valid_statuses = ['IP', 'IQ', 'RD', ]
+        current_status_index = valid_statuses.index(self.status)
+        try:
+            if current_status_index == 0 and move_index == -1:
+                self.status = 'IP'
+            new_status = valid_statuses[current_status_index + move_index]
+        except IndexError:
+            new_status = 'RD'
+        self.status = new_status
+        self.save()
+
+    def admin_card_status_change(self, request, move_index):
+        valid_statuses = ['RD', 'DN', ]
+        current_status_index = valid_statuses.index(self.status)
+        try:
+            if current_status_index == 0 and move_index == -1:
+                self.status = 'RD'
+            new_status = valid_statuses[current_status_index + move_index]
+        except IndexError:
+            new_status = 'DN'
+        self.status = new_status
+        self.save()
+
     def __str__(self):
         return f"task#{self.id}-{self.status}-by_{self.creator}-on_{self.executor}"

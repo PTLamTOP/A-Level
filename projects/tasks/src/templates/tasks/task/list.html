@@ -1,6 +1,11 @@
 {% extends 'base.html' %}
 
+{% block navigation %}
+    {% include 'navigation.html' %}
+{% endblock navigation %}
+
 {% block content %}
+
     <div id="main">
         {% if user.is_authenticated %}
             <h1>Create a new card</h1>
@@ -9,13 +14,13 @@
                 {{ card_create_form.as_p }}
                 <input type="submit" value="Create">
             </form>
+            <hr>
+            <br>
         {% endif %}
-        <hr>
-        <br>
+
         <h1>Tasks</h1>
         <hr>
         {% for card in cards %}
-            <hr>
             <a href="{{ card.get_absolute_url }}">
                 <p>{{ card.text | truncatewords:10 }}</p>
                 <p>on {% if  card.executor %}{{ card.executor.username }}{% else %}Nobody{% endif %}</p>

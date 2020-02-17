@@ -48,6 +48,9 @@ INSTALLED_APPS = [
     # rest
     'rest_framework',
     'django_filters',
+    'rest_framework.authtoken',
+    'rest_auth',
+    'rest_auth.registration',
 
 ]
 
@@ -70,8 +73,8 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
-    # custom login required middleware
-    'tasks.middleware.LoginRequiredMiddleware',
+    # custom middleware logout if last action was 5 mins ago
+    'tasks.middleware.LastActionCheckMiddleware',
 ]
 
 ROOT_URLCONF = 'tasksproject.urls'
@@ -130,7 +133,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Kiev'
 
 USE_I18N = True
 

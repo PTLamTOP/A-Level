@@ -1,11 +1,17 @@
 {% extends 'base.html' %}
 
+
+
 {% block title %}
     Task Update
 {% endblock title %}
 
+{% block navigation %}
+    {% include 'navigation.html' %}
+{% endblock navigation %}
+
+
 {% block content %}
-    <a href="{% url 'tasks:card-list' %}">Home</a>
 
     <div id="main">
         <h1>Card id #{{ card.id }}</h1>
