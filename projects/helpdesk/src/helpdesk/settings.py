@@ -37,7 +37,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'users.apps.UsersConfig',
     'request.apps.RequestConfig',
 
     # all-auth
@@ -49,6 +48,8 @@ INSTALLED_APPS = [
     # rest
     'rest_framework',
     'django_filters',
+    'rest_auth',
+    'rest_auth.registration',
 ]
 
 # all-auth
@@ -70,8 +71,13 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
+    # custom middleware logout if last action was 5 mins ago
+    'request.middleware.LastActionCheckMiddleware',
+
     # custom login required middleware
     'request.middleware.LoginRequiredMiddleware',
+
+
 ]
 
 ROOT_URLCONF = 'helpdesk.urls'
@@ -130,7 +136,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Kiev'
 
 USE_I18N = True
 

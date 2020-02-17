@@ -1,13 +1,14 @@
 from django.urls import path, include
-from .views import RequestListView, RequestDetailView, RequestUpdateView, \
-    RequestCreateView, ReRequestView, CommentCreateView, ReRequestListView, \
-    RequestApproveView, RequestRefuseView, RequestDeclineView, RequestRetrieveViewSet
+from .views import (RequestListView, RequestDetailView, RequestUpdateView,
+                    RequestCreateView, ReRequestView, CommentCreateView, ReRequestListView,
+                    RequestApproveView, RequestRefuseView, RequestDeclineView)
 from rest_framework.routers import DefaultRouter
+from .api.views import RequestRetrieveViewSet
 
 app_name = 'requests'
 
 router = DefaultRouter()
-router.register('request-serializer', RequestRetrieveViewSet)
+router.register('api/request', RequestRetrieveViewSet)
 
 urlpatterns = [
     path('request/create/', RequestCreateView.as_view(), name='request-create'),
@@ -18,7 +19,7 @@ urlpatterns = [
     path('request/<int:pk>/<slug:slug>/approve', RequestApproveView.as_view(), name='request-approve'),
     path('request/<int:pk>/<slug:slug>/delete', RequestDeclineView.as_view(), name='request-delete'),
     path('request/<int:pk>/<slug:slug>/comment/create/', CommentCreateView.as_view(), name='comment-create'),
-    path('re-request/', ReRequestListView.as_view(), name='rerequest-list'),
+    path('re-request/', ReRequestListView.as_view(), name='rerequest-list-home'),
     path('', RequestListView.as_view(), name='request-list-home'),
     path('', include(router.urls)),
 ]

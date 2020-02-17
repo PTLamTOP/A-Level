@@ -1,28 +1,11 @@
 from django.shortcuts import redirect
-from django.urls import reverse_lazy, reverse
+from django.urls import reverse_lazy
 
 from django.views.generic import ListView, UpdateView, CreateView, View, DetailView
 from django.contrib.auth.mixins import UserPassesTestMixin
 
 from .models import Request, Refusal, Approval, Denial
 from .forms import RequestCreateForm, CommentForm
-
-from .serializer import RequestSerializer
-from rest_framework import viewsets, mixins
-from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework.permissions import IsAuthenticated, IsAdminUser
-
-
-class RequestRetrieveViewSet(viewsets.GenericViewSet,
-                             mixins.ListModelMixin):
-    """
-    Serializer for retrieving Requests
-    """
-    queryset = Request.objects.all()
-    serializer_class = RequestSerializer
-    filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['importance', ]
-    permission_classes = [IsAuthenticated & IsAdminUser]
 
 
 """
@@ -77,7 +60,7 @@ class RequestRefuseView(UserPassesTestMixin, CreateView):
         return super().form_valid(form)
 
     def get_success_url(self):
-        return reverse_lazy('requests:request-list')
+        return reverse_lazy('requests:request-list-home')
 
     def test_func(self):
         self.request_obj = Request.objects.get(pk=self.kwargs.get('pk'))
