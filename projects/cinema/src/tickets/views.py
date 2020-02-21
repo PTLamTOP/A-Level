@@ -7,7 +7,7 @@ from .models import Ticket
 from django.views.generic import ListView, View
 
 from django.contrib.auth.mixins import LoginRequiredMixin
-from .tests import NotAdminTestMixin
+from .mixins import NotAdminTestMixin
 
 
 class TicketsListView(LoginRequiredMixin, NotAdminTestMixin, ListView):
@@ -18,10 +18,6 @@ class TicketsListView(LoginRequiredMixin, NotAdminTestMixin, ListView):
     template_name = 'tickets/ticket/list.html'
     context_object_name = 'tickets'
     total_cost = 0
-
-    def get_queryset(self):
-        queryset = super().get_queryset().filter(buyer=self.request.user)
-        return queryset
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(object_list=None, **kwargs)
@@ -42,14 +38,5 @@ class TicketCreate(LoginRequiredMixin, NotAdminTestMixin, View):
 
         # check if there are enough available seats
         if session_obj.has_enough_seats(quantity=quantity, request=request):
-            # update profile.total_cost
-            request.user.profile.total_cost += (quantity * session_obj.price)
-            request.user.profile.save()
-            # update session.available_seats
-            session_obj.available_seats -= quantity
-            session_obj.update()
-            # create ticket objects
-            for q in range(quantity):
-                ticket = Ticket(buyer=request.user, session=session_obj)
-                ticket.save()
+            request.user.profile.buy_tickets(quantity=quantity, session_obj=session_obj)
         return redirect('film-sessions:session-list')

@@ -1,9 +1,9 @@
 <nav>
     {% if user.is_authenticated %}
         {% if not user.is_superuser %}
-            <p><a href="{% url 'tickets:ticket-list' %}">My Tickets</a></p>
+            <p><a href="{% url 'tickets:ticket-list-home' %}">My Tickets</a></p>
         {% else %}
-            <p><a href="{% url 'halls:hall-list' %}">Hall list</a></p>
+            <p><a href="{% url 'halls:hall-list-home' %}">Hall list</a></p>
             <p><a href="{% url 'halls:hall-create' %}">Create New Hall</a></p>
             <p><a href="{% url 'film-sessions:film-create' %}">Create New Film</a></p>
             <p><a href="{% url 'film-sessions:session-create' %}">Create New Session</a></p>

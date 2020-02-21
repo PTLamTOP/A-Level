@@ -18,6 +18,8 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 
+from profiles.api.views import CustomLoginView, CustomLogoutView, CustomRegisterView
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('allauth.urls')),
@@ -27,11 +29,10 @@ urlpatterns = [
 ]
 
 urlpatterns += [
-    path('rest-auth/', include('rest_auth.urls')),
-    path('rest-auth/registration/', include('rest_auth.registration.urls')),
+    path('rest-auth/registration/', CustomRegisterView.as_view(), name='rest_register'),
+    path('rest-auth/login/', CustomLoginView.as_view(), name='rest_login'),
+    path('rest-auth/logout/', CustomLogoutView.as_view(), name='rest_logout'),
 ]
-
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-

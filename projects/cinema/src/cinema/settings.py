@@ -185,3 +185,6 @@ REST_FRAMEWORK = {
 # override message tags
 MESSAGE_TAGS = {message_constants.ERROR: 'warning',
                 message_constants.INFO: 'info'}
+
+
+ACCOUNT_LOGOUT_ON_GET = True

@@ -7,7 +7,8 @@ from .models import Hall
 
 from django.views.generic import ListView, CreateView, UpdateView
 
-from .tests import AdminTestMixin
+from .mixins import AdminTestMixin
+from halls.api.exceptions import NotAllowedToUpdate
 
 
 class HallListView(AdminTestMixin, ListView):
@@ -29,7 +30,7 @@ class HallCreateView(AdminTestMixin, CreateView):
 
     def get_success_url(self):
         messages.add_message(self.request, messages.SUCCESS, f'The hall was created!')
-        return reverse_lazy('halls:hall-list')
+        return reverse_lazy('halls:hall-list-home')
 
 
 class HallUpdateView(AdminTestMixin, UpdateView):
@@ -50,16 +51,20 @@ class HallUpdateView(AdminTestMixin, UpdateView):
     context_object_name = 'hall'
 
     def get_success_url(self):
-        return reverse_lazy('halls:hall-list')
+        return reverse_lazy('halls:hall-list-home')
 
     def post(self, request, *args, **kwargs):
         hall_obj = Hall.objects.get(pk=kwargs.get('pk'))
         new_seats_amount = int(request.POST.get('seats'))
-        if hall_obj.can_be_update():  # check if tickets to the hall were not purchased.
-            for s in hall_obj.sessions.all():  # updated attribute 'available_seats' of all sessions in the hall
+        try:
+            # check if tickets to the hall were not purchased.
+            hall_obj.can_be_update()
+            # updated attribute 'available_seats' of all sessions in the hall
+            for s in hall_obj.sessions.all():
                 s.update_seats_amount(new_amount=new_seats_amount)
-            messages.add_message(request, messages.SUCCESS, f'The hall was updated!')
+            messages.add_message(request, messages.SUCCESS, 'The hall was updated!')
             return super().post(request, *args, **kwargs)
-        messages.add_message(request, messages.ERROR, f"The hall can not be updated, "
-                                                      f"as a ticket in the hall was already bought")
-        return redirect(self.request.META.get('HTTP_REFERER'))
+        except NotAllowedToUpdate:
+            messages.add_message(request, messages.ERROR, "The hall can not be updated, "
+                                                          "as a ticket was already purchased for a hall's session!")
+            return redirect(self.request.META.get('HTTP_REFERER'))

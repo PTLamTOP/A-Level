@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Hall
+from halls.models import Hall
 
 
 class HallSerializer(serializers.ModelSerializer):

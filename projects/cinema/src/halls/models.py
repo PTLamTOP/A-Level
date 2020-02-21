@@ -1,5 +1,7 @@
 from django.db import models
 
+from halls.api.exceptions import NotAllowedToUpdate
+
 
 class Hall(models.Model):
     name = models.CharField(max_length=100)
@@ -11,5 +13,9 @@ class Hall(models.Model):
         return f"Hall '{self.name}'"
 
     def can_be_update(self):
+        """
+        The hall can not be updated, as a ticket was already purchased for a hall's session!
+        """
         hall_sessions = self.sessions.all()
-        return all(not s.tickets.all() for s in hall_sessions)
+        if not all(not s.tickets.all() for s in hall_sessions):
+            raise NotAllowedToUpdate

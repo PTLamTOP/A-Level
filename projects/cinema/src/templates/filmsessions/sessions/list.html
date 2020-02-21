@@ -49,7 +49,7 @@
                     <form action="{% url 'tickets:ticket-create' %}" method="post">
                         {% csrf_token %}
                         <input type="hidden" name="session_id" value="{{ session.id }}">
-                        <input type="number" min="0" name="quantity" value="1">
+                        <input type="number" min="1" name="quantity" value="1">
                         <input type="submit" value="Buy" class="btn btn-primary">
                     </form>
                 {% endif %}

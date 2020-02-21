@@ -1,6 +1,6 @@
 from django_filters import DateRangeFilter, DateTimeFilter
 import django_filters
-from .models import FilmSession
+from filmsessions.models import FilmSession
 
 
 class FilmSessionFilter(django_filters.FilterSet):
