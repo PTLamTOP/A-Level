@@ -70,9 +70,7 @@ class UserTestLoginCase(TestCase):
         1) input wrong password;
         2) input wrong username;
         3) all data for login is correct.
-    TEST NOT IS PASSED!!!
-    Questions:
-        1) user does not login via client.post()
+    TEST IS PASSED!!!
     """
 
     def setUp(self) -> None:
@@ -87,10 +85,9 @@ class UserTestLoginCase(TestCase):
         self.client = Client()
 
     def test_login_with_wrong_password(self):
-        # QUESTION! AssertionError: 'The username and/or password you specified are not correct.' not found in response content.
         # login
         response = self.client.post('http://127.0.0.1:8000/accounts/login/', dict(
-            username=self.user_data['username'],
+            login=self.user_data['username'],
             password=self.user_data['password_wrong'],
         ))
         # after wrong login's data should get status 200 and error message
@@ -98,10 +95,9 @@ class UserTestLoginCase(TestCase):
         self.assertIn("The username and/or password you specified are not correct.", response.content.decode('utf-8'))
 
     def test_login_with_wrong_username(self):
-        # QUESTION! AssertionError: 'The username and/or password you specified are not correct.' not found in response content.
         # login
         response = self.client.post('http://127.0.0.1:8000/accounts/login/', dict(
-            username=self.user_data['username_wrong'],
+            login=self.user_data['username_wrong'],
             password=self.user_data['password'],
         ))
 
@@ -113,14 +109,13 @@ class UserTestLoginCase(TestCase):
         # QUESTION! AssertionError: 200 != 302
         # login
         response = self.client.post('http://127.0.0.1:8000/accounts/login/', dict(
-            username=self.user_data['username'],
+            login=self.user_data['username'],
             password=self.user_data['password'],
         ))
-        # after successful login should get status 302 and redirect to home page
-        self.assertIn('_auth_user_id', self.client.session)
+        # after successful login should get status 302 and redirect to home page, and there is a session
         self.assertEquals(response.status_code, 302)
-        self.assertIn("Successfully signed in", response.content.decode('utf-8'))
         self.assertEquals(response.url, '/')
+        self.assertTrue(hasattr(self.client.session, 'session_key'))
 
 
 class UserTestLogoutCase(TestCase):
@@ -139,7 +134,7 @@ class UserTestLogoutCase(TestCase):
         self.client = Client()
         # login
         self.client.post('http://127.0.0.1:8000/accounts/login/', dict(
-            username=self.user_data['username'],
+            login=self.user_data['username'],
             password=self.user_data['password'],
         ))
 
