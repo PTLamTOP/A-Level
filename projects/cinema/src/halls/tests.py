@@ -21,17 +21,17 @@ class HallLoginRequiredTestCase(TestCase):
                                         seats=20)
 
     def test_hall_list_login_required(self):
-        response = self.client.get('http://127.0.0.1:8000/halls/')
+        response = self.client.get('/halls/')
         self.assertEquals(response.status_code, 302)
         self.assertEquals(response.url, '/accounts/login/?next=/halls/')
 
     def test_hall_create_login_required(self):
-        response = self.client.get('http://127.0.0.1:8000/halls/create/')
+        response = self.client.get('/halls/create/')
         self.assertEquals(response.status_code, 302)
         self.assertEquals(response.url, '/accounts/login/?next=/halls/create/')
 
     def test_hall_update_login_required(self):
-        response = self.client.get('http://127.0.0.1:8000/halls/1/update/')
+        response = self.client.get('/halls/1/update/')
         self.assertEquals(response.status_code, 302)
         self.assertEquals(response.url, '/accounts/login/?next=/halls/1/update/')
 
@@ -46,27 +46,28 @@ class HallIsAdminRequiredTestCase(TestCase):
         self.user.set_password('password123')
         self.user.save()
         self.client = Client()
-        self.client.post('http://127.0.0.1:8000/accounts/login/', dict(
+        self.client.post('/accounts/login/', dict(
             login='test',
             password='password123',
         ))
 
     def test_hall_list_is_admin_required_correct(self):
-        response = self.client.get('http://127.0.0.1:8000/halls/')
+        response = self.client.get('/halls/')
         self.assertEquals(response.status_code, 403)
 
     def test_hall_create_is_admin_required_correct(self):
-        response = self.client.get('http://127.0.0.1:8000/halls/create/')
+        response = self.client.get('/halls/create/')
         self.assertEquals(response.status_code, 403)
 
     def test_hall_update_is_admin_required_correct(self):
-        response = self.client.get('http://127.0.0.1:8000/halls/1/update/')
+        response = self.client.get('/halls/1/update/')
         self.assertEquals(response.status_code, 403)
 
 
 class HallCRUDTestCase(TestCase):
     """
     Check how admin will get access to halls' pages.
+    TEST IS PASSED!!!
     """
     def setUp(self) -> None:
         # create super user
@@ -75,7 +76,7 @@ class HallCRUDTestCase(TestCase):
                                                    email='test@gmail.com')
         self.buyer = User.objects.create(username='buyer')
         self.client = Client()
-        self.client.post('http://127.0.0.1:8000/accounts/login/', dict(
+        self.client.post('/accounts/login/', dict(
             login='test',
             password='password123',
         ))
@@ -98,14 +99,14 @@ class HallCRUDTestCase(TestCase):
         """
         TEST IS PASSED!
         """
-        response = self.client.get('http://127.0.0.1:8000/halls/')
+        response = self.client.get('/halls/')
         self.assertEquals(response.status_code, 200)
 
     def test_hall_create(self):
         """
         TEST IS PASSED!
         """
-        response = self.client.post('http://127.0.0.1:8000/halls/create/', dict(
+        response = self.client.post('/halls/create/', dict(
             name='Hall 2',
             seats=100))
         # The second hall should be created (2 halls in DB) and user should be redirected to /halls/ page
@@ -119,7 +120,7 @@ class HallCRUDTestCase(TestCase):
         TEST IS PASSED!
         """
         updated_name = 'Hall 1 updated'
-        response = self.client.post('http://127.0.0.1:8000/halls/1/update/', dict(
+        response = self.client.post('/halls/1/update/', dict(
             name=updated_name,
             seats=50))
         # The first hall should be updated and user should be redirected to /halls/ page
@@ -130,25 +131,21 @@ class HallCRUDTestCase(TestCase):
     def test_hall_update_error(self):
         """
         The hall can not be updated as there is a ticket to the hall.
-        TEST IS NOT PASSED!
-        Errors:
-            1) During handling of the above exception, another exception occurred:
-            TypeError: argument of type 'NoneType' is not iterable
+        TEST IS PASSED!
         """
         updated_name = 'Hall 1 updated'
         # create the ticket to the hall with id 1
         Ticket.objects.create(buyer=self.buyer, session=self.session_)
         # try to update the hall with new hall's name
-        response = self.client.post('http://127.0.0.1:8000/halls/1/update/', dict(
+        response = self.client.post('/halls/1/update/', dict(
             name=updated_name,
             seats=50))
         # refresh hall's data from DB
         self.hall.refresh_from_db()
         # The first hall should not be updated and admin should get a warning message
         self.assertNotEquals(Hall.objects.get(id=1).name, updated_name)
-        # self.assertEquals(response.status_code, 302)
-        # self.assertIn("The hall can not be updated, as a ticket was already purchased for a hall's session!",
-        #               response.content.decode('utf-8'))
+        self.assertEquals(response.status_code, 302)
+        self.assertEquals(response.url, '/halls/1/update/')
 
 
 

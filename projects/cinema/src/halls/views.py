@@ -43,7 +43,7 @@ class HallUpdateView(AdminTestMixin, UpdateView):
             1) update the hall object
             2) update attribute 'available_seats' of all sessions which will be in the hall.
 
-        2. Tickets were purchased -> redirect to 'HTTP_REFERER' with messages like 'Can not update the hall'
+        2. Tickets were purchased -> redirect to hall's url with messages like 'Can not update the hall'
     """
     model = Hall
     fields = ('name', 'seats', )
@@ -67,4 +67,4 @@ class HallUpdateView(AdminTestMixin, UpdateView):
         except NotAllowedToUpdate:
             messages.add_message(request, messages.ERROR, "The hall can not be updated, "
                                                           "as a ticket was already purchased for a hall's session!")
-            return redirect(self.request.META.get('HTTP_REFERER'))
+            return redirect(hall_obj.get_absolute_url())

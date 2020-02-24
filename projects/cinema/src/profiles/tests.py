@@ -22,7 +22,7 @@ class UserTestSignupCase(TestCase):
 
     def test_signup_with_different_password(self):
         # checking what will be if password1 != password2 when user register
-        response = self.client.post('http://127.0.0.1:8000/accounts/signup/', dict(
+        response = self.client.post('/accounts/signup/', dict(
             username=self.user_data['username'],
             email=self.user_data['email'],
             password1=self.user_data['password'],
@@ -34,11 +34,11 @@ class UserTestSignupCase(TestCase):
         # if password1 != password2 message "You must type the same password each time." should be displayed
         self.assertIn("You must type the same password each time.", response.content.decode('utf-8'))
 
-    def test_signup_with_exits_user(self):
+    def test_signup_with_exist_user(self):
         # create a user which will have the same username
         exist_user = User.objects.create(username=self.user_data['username'])
 
-        response = self.client.post('http://127.0.0.1:8000/accounts/signup/', dict(
+        response = self.client.post('/accounts/signup/', dict(
             username=self.user_data['username'],
             email=self.user_data['email'],
             password1=self.user_data['password'],
@@ -50,7 +50,7 @@ class UserTestSignupCase(TestCase):
         self.assertIn("A user with that username already exists.", response.content.decode('utf-8'))
 
     def test_signup_works_correct(self):
-        response = self.client.post('http://127.0.0.1:8000/accounts/signup/', dict(
+        response = self.client.post('/accounts/signup/', dict(
             username=self.user_data['username'],
             email=self.user_data['email'],
             password1=self.user_data['password'],
@@ -86,7 +86,7 @@ class UserTestLoginCase(TestCase):
 
     def test_login_with_wrong_password(self):
         # login
-        response = self.client.post('http://127.0.0.1:8000/accounts/login/', dict(
+        response = self.client.post('/accounts/login/', dict(
             login=self.user_data['username'],
             password=self.user_data['password_wrong'],
         ))
@@ -96,7 +96,7 @@ class UserTestLoginCase(TestCase):
 
     def test_login_with_wrong_username(self):
         # login
-        response = self.client.post('http://127.0.0.1:8000/accounts/login/', dict(
+        response = self.client.post('/accounts/login/', dict(
             login=self.user_data['username_wrong'],
             password=self.user_data['password'],
         ))
@@ -108,7 +108,7 @@ class UserTestLoginCase(TestCase):
     def test_login_works_correct(self):
         # QUESTION! AssertionError: 200 != 302
         # login
-        response = self.client.post('http://127.0.0.1:8000/accounts/login/', dict(
+        response = self.client.post('/accounts/login/', dict(
             login=self.user_data['username'],
             password=self.user_data['password'],
         ))
@@ -133,18 +133,19 @@ class UserTestLogoutCase(TestCase):
         self.exist_user.set_password(raw_password=self.user_data['password'])
         self.client = Client()
         # login
-        self.client.post('http://127.0.0.1:8000/accounts/login/', dict(
+        self.client.post('/accounts/login/', dict(
             login=self.user_data['username'],
             password=self.user_data['password'],
         ))
 
     def test_logout_works_correct(self):
         # logout
-        response = self.client.post('http://127.0.0.1:8000/accounts/logout/',)
+        response = self.client.post('/accounts/logout/',)
 
         # after successful login should get status 302 and redirect to home page
         self.assertEquals(response.status_code, 302)
         self.assertEquals(response.url, '/')
+
 
 
 

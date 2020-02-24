@@ -96,7 +96,7 @@ class SessionCreateView(AdminTestMixin, CreateView):
             messages.add_message(request, messages.ERROR,
                                  "There is already a session during this time in the hall!"
                                  )
-        return redirect(self.request.META.get('HTTP_REFERER'))
+        return redirect('film-sessions:session-create')
 
     def get_success_url(self):
         return reverse_lazy('film-sessions:session-list')
@@ -127,7 +127,7 @@ class SessionUpdateView(AdminTestMixin, UpdateView):
         except NotAllowedToUpdate:
             messages.add_message(request, messages.ERROR, f"The session can not be updated, "
                                                           f"as a ticket was already purchased for the session!")
-            return redirect(self.request.META.get('HTTP_REFERER'))
+            return redirect(session_obj.get_absolute_url())
 
 
 

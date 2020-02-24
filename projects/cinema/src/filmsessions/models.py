@@ -1,6 +1,8 @@
 from django.db import models
 from django.conf import settings
 
+from django.urls import reverse
+
 from django_fields import DefaultStaticImageField
 
 from halls.models import Hall
@@ -159,4 +161,7 @@ class FilmSession(models.Model):
 
     def __str__(self):
         return f"Session of film '{self.film.title}' at {self.time_from}"
+
+    def get_absolute_url(self):
+        return reverse('film-sessions:session-update', kwargs={'pk': self.pk})
 

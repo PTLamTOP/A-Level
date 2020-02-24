@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 
 from halls.api.exceptions import NotAllowedToUpdate
 
@@ -19,3 +20,6 @@ class Hall(models.Model):
         hall_sessions = self.sessions.all()
         if not all(not s.tickets.all() for s in hall_sessions):
             raise NotAllowedToUpdate
+
+    def get_absolute_url(self):
+        return reverse('halls:hall-update', kwargs={'pk': self.pk})
