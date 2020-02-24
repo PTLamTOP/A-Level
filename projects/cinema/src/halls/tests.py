@@ -6,8 +6,6 @@ from filmsessions.models import Film, FilmSession
 from halls.models import Hall
 from tickets.models import Ticket
 
-from halls.api.exceptions import NotAllowedToUpdate
-
 from datetime import timedelta, date, datetime
 import pytz
 
@@ -97,10 +95,16 @@ class HallCRUDTestCase(TestCase):
                                                    time_to=local_datetime_now + timedelta(hours=2))
 
     def test_hall_list(self):
+        """
+        TEST IS PASSED!
+        """
         response = self.client.get('http://127.0.0.1:8000/halls/')
         self.assertEquals(response.status_code, 200)
 
     def test_hall_create(self):
+        """
+        TEST IS PASSED!
+        """
         response = self.client.post('http://127.0.0.1:8000/halls/create/', dict(
             name='Hall 2',
             seats=100))
@@ -112,6 +116,7 @@ class HallCRUDTestCase(TestCase):
     def test_hall_update_ok(self):
         """
         The hall can be updated as there is not any ticket to the hall.
+        TEST IS PASSED!
         """
         updated_name = 'Hall 1 updated'
         response = self.client.post('http://127.0.0.1:8000/halls/1/update/', dict(
@@ -131,19 +136,19 @@ class HallCRUDTestCase(TestCase):
             TypeError: argument of type 'NoneType' is not iterable
         """
         updated_name = 'Hall 1 updated'
+        # create the ticket to the hall with id 1
         Ticket.objects.create(buyer=self.buyer, session=self.session_)
-        try:
-            response = self.client.post('http://127.0.0.1:8000/halls/1/update/', dict(
-                name=updated_name,
-                seats=50))
-            # refresh hall's data from DB
-            self.hall.refresh_from_db()
-        except NotAllowedToUpdate:
-            # The first hall should be updated and user should be redirected to /halls/ page
-            self.assertNotEquals(Hall.objects.get(id=1).name, updated_name)
-            # self.assertEquals(response.status_code, 200)
-            # self.assertIn("The hall can not be updated, as a ticket was already purchased for a hall's session!",
-            #               response.content.decode('utf-8'))
+        # try to update the hall with new hall's name
+        response = self.client.post('http://127.0.0.1:8000/halls/1/update/', dict(
+            name=updated_name,
+            seats=50))
+        # refresh hall's data from DB
+        self.hall.refresh_from_db()
+        # The first hall should not be updated and admin should get a warning message
+        self.assertNotEquals(Hall.objects.get(id=1).name, updated_name)
+        # self.assertEquals(response.status_code, 302)
+        # self.assertIn("The hall can not be updated, as a ticket was already purchased for a hall's session!",
+        #               response.content.decode('utf-8'))
 
 
 

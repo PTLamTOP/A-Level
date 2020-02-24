@@ -74,10 +74,10 @@ class SessionCreateView(AdminTestMixin, CreateView):
         hall_id = int(request.POST.get('hall'))
         all_hall_sessions = FilmSession.objects.filter(hall__id=hall_id)
 
-        # new session's naive datetime
+        # new session's naive datetime from the form
         time_from_str = request.POST.get('time_from')
         time_to_str = request.POST.get('time_to')
-        # transform the time to aware datetime 'Europe/Kiev'
+        # transform the time from the form to aware datetime 'Europe/Kiev'
         local = pytz.timezone('Europe/Kiev')
         time_from = local.localize(datetime.strptime(time_from_str, '%Y-%m-%d %H:%M'), is_dst=True)
         time_to = local.localize(datetime.strptime(time_to_str, '%Y-%m-%d %H:%M'), is_dst=True)
